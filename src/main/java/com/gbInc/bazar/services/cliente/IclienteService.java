@@ -1,13 +1,19 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Interface.java to edit this template
- */
-
 package com.gbInc.bazar.services.cliente;
 
-/**
- * @author cuent
- */
-public interface IclienteService {
+import com.gbInc.bazar.DTO.DTOcliente;
+import java.util.List;
+import org.springframework.stereotype.Service;
 
+public interface IclienteService {
+	
+	public List<DTOcliente> traerClientes();
+	
+	public Boolean editarCliente(DTOcliente cliente);
+	
+	public DTOcliente traerCliente(Long id);
+	
+	public Boolean crearCliente(DTOcliente cliente);
+	
+	public Boolean eliminarCliente(Long id);
+	
 }
