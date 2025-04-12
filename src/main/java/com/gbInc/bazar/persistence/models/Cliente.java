@@ -4,14 +4,20 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
  * @author cuent
  */
-@Setter
 @Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 @Entity
 public class Cliente {
 		
@@ -21,16 +27,5 @@ public class Cliente {
 	private String nombre;
 	private String apellido;
 	private String dni;
-
-	public Cliente(Long id_cliente, String nombre, String apellido, String dni) {
-		this.id_cliente = id_cliente;
-		this.nombre = nombre;
-		this.apellido = apellido;
-		this.dni = dni;
-	}
-
-	public Cliente() {
-	}
-	
 	
 }

@@ -3,38 +3,69 @@ package com.gbInc.bazar.services.cliente;
 import com.gbInc.bazar.DTO.DTOcliente;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import com.gbInc.bazar.mappers.ClienteMapper;
+import com.gbInc.bazar.persistence.repository.IclienteRepository;
+import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @Service
 public class clienteService implements IclienteService {
 
+	@Autowired
+	IclienteRepository clienteRepo;
+
 	@Override
 	public List<DTOcliente> traerClientes() {
-		throw new UnsupportedOperationException("Not supported yet."); // Generated from
-																		// nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-	}
 
-	@Override
-	public Boolean editarCliente(DTOcliente cliente) {
-		throw new UnsupportedOperationException("Not supported yet."); // Generated from
-																		// nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-	}
-
-	@Override
-	public Boolean crearCliente(DTOcliente cliente) {
-		throw new UnsupportedOperationException("Not supported yet."); // Generated from
-																		// nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-	}
-
-	@Override
-	public Boolean eliminarCliente(Long id) {
-		throw new UnsupportedOperationException("Not supported yet."); // Generated from
-																		// nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+		return clienteRepo.findAll().stream().map(cli -> {
+			return ClienteMapper.aDTO(cli);
+		}).collect(Collectors.toList());
 	}
 
 	@Override
 	public DTOcliente traerCliente(Long id) {
-		throw new UnsupportedOperationException("Not supported yet."); // Generated from
-																		// nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+
+		if (clienteRepo.existsById(id)) {
+			return ClienteMapper.aDTO(clienteRepo.findById(id).get());
+		}
+
+		return null;
+	}
+
+	@Override
+	public Boolean crearCliente(DTOcliente cliente) {
+		try {
+			cliente.setId_cliente(null);
+			this.clienteRepo.save(ClienteMapper.aCliente(cliente));
+			return true;
+		}
+		catch (Exception e) {
+			return false;
+		}
+	}
+
+	@Override
+	public Boolean eliminarCliente(Long id) {
+
+		if (!this.clienteRepo.existsById(id)) {
+			return false;
+		}
+
+		this.clienteRepo.deleteById(id);
+		return true;
+
+	}
+
+	@Override
+	public Boolean editarCliente(DTOcliente cliente) {
+
+		if (!this.clienteRepo.existsById(cliente.getId_cliente())) {
+			return false;
+		}
+		
+		this.clienteRepo.save(ClienteMapper.aCliente(cliente));
+		
+		return true;
 	}
 
 }

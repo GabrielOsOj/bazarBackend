@@ -34,7 +34,7 @@ public class clienteController {
 
 		DTOcliente cli = this.clienteSv.traerCliente(id);
 
-		if (cli.equals(null)) {
+		if (cli!=null) {
 			return new ResponseEntity<>(cli, HttpStatus.ACCEPTED);
 		}
 		else {
@@ -56,8 +56,11 @@ public class clienteController {
 	}
 
 	@PutMapping("/editar/{id_cliente}")
-	public ResponseEntity<Boolean> editarCliente(@RequestBody DTOcliente cliente) {
-
+	public ResponseEntity<Boolean> editarCliente(
+			@RequestBody DTOcliente cliente,
+			@PathVariable Long id_cliente) {
+		
+		cliente.setId_cliente(id_cliente);
 		Boolean editado = this.clienteSv.editarCliente(cliente);
 
 		if (editado) {
@@ -70,9 +73,9 @@ public class clienteController {
 	}
 
 	@DeleteMapping("/eliminar/{id_cliente}")
-	public ResponseEntity<Boolean> eliminarCliente(@PathVariable Long id) {
+	public ResponseEntity<Boolean> eliminarCliente(@PathVariable Long id_cliente) {
 
-		Boolean eliminado = this.clienteSv.eliminarCliente(id);
+		Boolean eliminado = this.clienteSv.eliminarCliente(id_cliente);
 		if (eliminado) {
 			return new ResponseEntity<>(eliminado, HttpStatus.CREATED);
 		}
