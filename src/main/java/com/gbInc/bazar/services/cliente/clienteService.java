@@ -11,8 +11,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Service
 public class clienteService implements IclienteService {
 
+	private IclienteRepository clienteRepo;
+
 	@Autowired
-	IclienteRepository clienteRepo;
+	public clienteService(IclienteRepository clienteServ) {
+		this.clienteRepo = clienteServ;
+	}
 
 	@Override
 	public List<DTOcliente> traerClientes() {
@@ -34,14 +38,11 @@ public class clienteService implements IclienteService {
 
 	@Override
 	public Boolean crearCliente(DTOcliente cliente) {
-		try {
-			cliente.setId_cliente(null);
-			this.clienteRepo.save(ClienteMapper.aCliente(cliente));
-			return true;
-		}
-		catch (Exception e) {
-			return false;
-		}
+
+		cliente.setId_cliente(null);
+		this.clienteRepo.save(ClienteMapper.aCliente(cliente));
+		return true;
+
 	}
 
 	@Override
@@ -62,9 +63,9 @@ public class clienteService implements IclienteService {
 		if (!this.clienteRepo.existsById(cliente.getId_cliente())) {
 			return false;
 		}
-		
+
 		this.clienteRepo.save(ClienteMapper.aCliente(cliente));
-		
+
 		return true;
 	}
 
