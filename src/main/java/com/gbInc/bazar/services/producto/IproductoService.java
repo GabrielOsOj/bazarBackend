@@ -1,13 +1,16 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Interface.java to edit this template
- */
 
 package com.gbInc.bazar.services.producto;
 
-/**
- * @author cuent
- */
+import com.gbInc.bazar.DTO.DTOproducto;
+import java.util.List;
+import com.gbInc.bazar.persistence.models.Producto;
+
 public interface IproductoService {
 
+	public List<DTOproducto> traerProductos();
+	public DTOproducto traerProducto(Long id);
+	public Boolean eliminarProducto(Long id);
+	public Boolean editarProducto(DTOproducto productoDTO);
+	public Boolean crearProducto(DTOproducto productoDTO);
+	
 }
