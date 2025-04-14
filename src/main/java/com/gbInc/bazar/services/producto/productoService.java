@@ -11,12 +11,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class productoService implements IproductoService{
+public class ProductoService implements IproductoService{
 
 	IproductoRepository productoRepo;
 
 	@Autowired
-	public productoService(IproductoRepository productoRepo) {
+	public ProductoService(IproductoRepository productoRepo) {
 		this.productoRepo = productoRepo;
 	}
 	
