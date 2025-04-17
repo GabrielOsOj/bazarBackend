@@ -47,6 +47,7 @@ public class ventaController {
 	@PostMapping("/crear")
 	public ResponseEntity<Boolean> crearVenta(@RequestBody DTOventa venta) {
 
+		venta.setCodigo_venta(null);
 		this.ventaSv.crearVenta(venta);
 		return new ResponseEntity<>(true, HttpStatus.CREATED);
 
@@ -57,12 +58,8 @@ public class ventaController {
 
 		ventaEditada.setCodigo_venta(codigo_venta);
 
-		Boolean editado = this.ventaSv.editarVenta(ventaEditada);
-
-		if (editado) {
-			return new ResponseEntity<>(editado, HttpStatus.NO_CONTENT);
-		}
-		return new ResponseEntity<>(editado, HttpStatus.NOT_FOUND);
+		this.ventaSv.editarVenta(ventaEditada);
+		return new ResponseEntity<>(true, HttpStatus.NO_CONTENT);
 
 	}
 

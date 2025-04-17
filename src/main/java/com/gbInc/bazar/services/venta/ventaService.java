@@ -10,7 +10,7 @@ import com.gbInc.bazar.persistence.models.Venta;
 import com.gbInc.bazar.persistence.repository.IventaRepository;
 import com.gbInc.bazar.services.cliente.IclienteService;
 import com.gbInc.bazar.services.producto.IproductoService;
-import java.time.LocalDate;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collector;
@@ -37,29 +37,27 @@ public class VentaService implements IventaService {
 
 	@Override
 	public void crearVenta(DTOventa venta) {
-
+		
+		this.validaciones(venta.getCliente(), venta.getListaProductos());
+		
 		Cliente cli = this.clienteSv.traerEntidadCliente(venta.getCliente().getId_cliente());
-		if (cli == null) {
-			throw new VentaException(HttpStatus.BAD_REQUEST, VentaExceptionCodigos.BE400);
-		}
 
-		if (!this.productoSv.validarProductos(venta.getListaProductos())) {
-			throw new VentaException(HttpStatus.BAD_REQUEST, VentaExceptionCodigos.BE401);
-		}
-
-		List<Producto> productos = new ArrayList<>();
-		venta.getListaProductos().forEach(p -> {
-			productos.add(this.productoSv.traerEntidadProducto(p.getCodigo_producto()));
-		});
+		List<Producto> productos = venta
+				.getListaProductos()
+				.stream()
+				.map(p -> {
+					return this.productoSv.traerEntidadProducto(p.getCodigo_producto());})
+				.collect(Collectors.toList());
+				
 
 		Venta nuevaVenta = Venta.builder()
-				.codigo_venta(null)
-				.fecha_venta(venta.getFecha_venta())
-				.cliente(cli)
-				.listaProductos(productos)
-				.total(venta.getTotal())
-				.build();
-		
+			.codigo_venta(venta.getCodigo_venta())
+			.fecha_venta(venta.getFecha_venta())
+			.cliente(cli)
+			.listaProductos(productos)
+			.total(venta.getTotal())
+			.build();
+
 		this.ventaRepo.save(nuevaVenta);
 	}
 
@@ -94,9 +92,26 @@ public class VentaService implements IventaService {
 	}
 
 	@Override
-	public Boolean editarVenta(DTOventa ventaEditada) {
-		throw new UnsupportedOperationException("Not supported yet."); // Generated from
-																		// nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+	public void editarVenta(DTOventa ventaEditada) {
+
+		if (!this.ventaRepo.existsById(ventaEditada.getCodigo_venta())) {
+
+			throw new VentaException(HttpStatus.BAD_REQUEST, VentaExceptionCodigos.BE402);
+		}
+
+		this.crearVenta(ventaEditada);
+
+	}
+
+	private void validaciones(Cliente cliente, List<Producto> productos) {
+		
+		if (cliente == null) {
+			throw new VentaException(HttpStatus.BAD_REQUEST, VentaExceptionCodigos.BE400);
+		}
+		
+		if (!this.productoSv.validarProductos(productos)) {
+			throw new VentaException(HttpStatus.BAD_REQUEST, VentaExceptionCodigos.BE401);
+		}
 	}
 
 }

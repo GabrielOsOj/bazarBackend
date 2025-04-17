@@ -11,6 +11,6 @@ public interface IventaService {
 	public List<DTOventa> traerVentas();
 	public DTOventa traerVenta(Long idVenta);
 	public Boolean eliminarVenta(Long idVenta);
-	public Boolean editarVenta(DTOventa ventaEditada);
+	public void editarVenta(DTOventa ventaEditada);
 	
 }
