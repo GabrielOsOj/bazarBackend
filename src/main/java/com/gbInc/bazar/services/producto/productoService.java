@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ProductoService implements IproductoService{
+public class ProductoService implements IproductoService {
 
 	IproductoRepository productoRepo;
 
@@ -19,65 +19,77 @@ public class ProductoService implements IproductoService{
 	public ProductoService(IproductoRepository productoRepo) {
 		this.productoRepo = productoRepo;
 	}
-	
+
 	@Override
 	public List<DTOproducto> traerProductos() {
-		
-		return this.productoRepo.findAll()
-				.stream()
-				.map(producto->{
-					return ProductoMapper.aDTO(producto);})
-				.collect(Collectors.toList());
+
+		return this.productoRepo.findAll().stream().map(producto -> {
+			return ProductoMapper.aDTO(producto);
+		}).collect(Collectors.toList());
 	}
 
 	@Override
 	public DTOproducto traerProducto(Long id) {
-		
-		return ProductoMapper.aDTO(this.traerEntidadProducto(id));
-	
+
+		Producto p = this.traerEntidadProducto(id);
+
+		return (p != null) ? ProductoMapper.aDTO(p) : null;
+
 	}
 
 	@Override
 	public Boolean eliminarProducto(Long id) {
-		
-		if(!this.productoRepo.existsById(id)){
+
+		if (!this.productoRepo.existsById(id)) {
 			return false;
 		}
-		
+
 		this.productoRepo.deleteById(id);
 		return true;
 	}
 
 	@Override
 	public Boolean editarProducto(DTOproducto productoDTO) {
-			
-		if(!this.productoRepo.existsById(productoDTO.getCodigo_producto())){
+
+		if (!this.productoRepo.existsById(productoDTO.getCodigo_producto())) {
 			return false;
 		}
-		
-		this.productoRepo
-			.save(ProductoMapper.aProducto(productoDTO));
+
+		this.productoRepo.save(ProductoMapper.aProducto(productoDTO));
 		return true;
-	
+
 	}
 
 	@Override
 	public Boolean crearProducto(DTOproducto productoDTO) {
-		
+
 		productoDTO.setCodigo_producto(null);
 		this.productoRepo.save(ProductoMapper.aProducto(productoDTO));
 		return true;
-	
+
 	}
 
 	@Override
 	public Producto traerEntidadProducto(Long id) {
-		
-		if(this.productoRepo.existsById(id)){
+
+		if (this.productoRepo.existsById(id)) {
 			return this.productoRepo.findById(id).get();
 		}
-		
+
 		return null;
+	}
+
+	@Override
+	public Boolean validarProductos(List<Producto> productos) {
+
+		for (Producto p : productos) {
+			if (!this.productoRepo.existsById(p.getCodigo_producto())) {
+				return false;
+			}
+		}
+
+		return true;
+
 	}
 
 }

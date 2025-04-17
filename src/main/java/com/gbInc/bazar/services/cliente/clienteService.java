@@ -30,8 +30,10 @@ public class ClienteService implements IclienteService {
 	@Override
 	public DTOcliente traerCliente(Long id) {
 
-		return ClienteMapper.aDTO(this.traerEntidadCliente(id));
-		
+		Cliente c = this.traerEntidadCliente(id);
+
+		return (c != null) ? ClienteMapper.aDTO(c) : null;
+
 	}
 
 	@Override
@@ -69,12 +71,9 @@ public class ClienteService implements IclienteService {
 
 	@Override
 	public Cliente traerEntidadCliente(Long id) {
-		
-		if(this.clienteRepo.existsById(id)){
-			return this.clienteRepo.findById(id).get();
-		}
-	
-		return null;
+
+		return this.clienteRepo.findById(id).orElse(null);
+
 	}
 
 }

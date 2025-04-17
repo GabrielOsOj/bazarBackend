@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface IventaService {
 	
-	public Boolean crearVenta(DTOventa venta);
+	public void crearVenta(DTOventa venta);
 	public List<DTOventa> traerVentas();
 	public DTOventa traerVenta(Long idVenta);
 	public Boolean eliminarVenta(Long idVenta);

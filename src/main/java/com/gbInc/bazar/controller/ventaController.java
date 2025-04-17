@@ -47,42 +47,35 @@ public class ventaController {
 	@PostMapping("/crear")
 	public ResponseEntity<Boolean> crearVenta(@RequestBody DTOventa venta) {
 
-		Boolean creado = this.ventaSv.crearVenta(venta);
-
-		if (creado) {
-			return new ResponseEntity<>(creado, HttpStatus.CREATED);
-		}
-		return new ResponseEntity<>(creado, HttpStatus.INTERNAL_SERVER_ERROR);
+		this.ventaSv.crearVenta(venta);
+		return new ResponseEntity<>(true, HttpStatus.CREATED);
 
 	}
 
 	@PutMapping("/editar/{codigo_venta}")
-	public ResponseEntity<Boolean> editarVenta(
-	@PathVariable Long codigo_venta,
-	@RequestBody DTOventa ventaEditada){
-		
+	public ResponseEntity<Boolean> editarVenta(@PathVariable Long codigo_venta, @RequestBody DTOventa ventaEditada) {
+
 		ventaEditada.setCodigo_venta(codigo_venta);
-		
+
 		Boolean editado = this.ventaSv.editarVenta(ventaEditada);
-		
+
 		if (editado) {
 			return new ResponseEntity<>(editado, HttpStatus.NO_CONTENT);
 		}
 		return new ResponseEntity<>(editado, HttpStatus.NOT_FOUND);
 
 	}
-	
+
 	@DeleteMapping("/eliminar/{codigo_venta}")
-	public ResponseEntity<Boolean> eliminarVenta(
-	@PathVariable Long codigo_venta){
-		
+	public ResponseEntity<Boolean> eliminarVenta(@PathVariable Long codigo_venta) {
+
 		Boolean eliminado = this.ventaSv.eliminarVenta(codigo_venta);
-	
+
 		if (eliminado) {
 			return new ResponseEntity<>(eliminado, HttpStatus.NO_CONTENT);
 		}
 		return new ResponseEntity<>(eliminado, HttpStatus.NOT_FOUND);
-		
+
 	}
 
 }
