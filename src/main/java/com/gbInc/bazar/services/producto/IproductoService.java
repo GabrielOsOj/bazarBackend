@@ -13,4 +13,6 @@ public interface IproductoService {
 	public Boolean editarProducto(DTOproducto productoDTO);
 	public Boolean crearProducto(DTOproducto productoDTO);
 	
+	public Producto traerEntidadProducto(Long id);
+			
 }

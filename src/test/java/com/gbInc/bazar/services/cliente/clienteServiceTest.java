@@ -17,13 +17,13 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.mockito.ArgumentCaptor;
 
 @ExtendWith(MockitoExtension.class)
-public class clienteServiceTest {
+public class ClienteServiceTest {
 
 	@Mock
 	private IclienteRepository clienteRepo;
 
 	@InjectMocks
-	private clienteService clienteSv;
+	private ClienteService clienteSv;
 
 	@Test
 	public void traerClientesTest() {

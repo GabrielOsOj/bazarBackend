@@ -18,7 +18,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-public class productoServiceTest {
+public class ProductoServiceTest {
 
 	@Mock
 	private IproductoRepository productoRepo;

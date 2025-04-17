@@ -33,11 +33,7 @@ public class ProductoService implements IproductoService{
 	@Override
 	public DTOproducto traerProducto(Long id) {
 		
-		if(!this.productoRepo.existsById(id)){
-			return null;
-		}
-		
-		return ProductoMapper.aDTO(this.productoRepo.findById(id).get());
+		return ProductoMapper.aDTO(this.traerEntidadProducto(id));
 	
 	}
 
@@ -72,6 +68,16 @@ public class ProductoService implements IproductoService{
 		this.productoRepo.save(ProductoMapper.aProducto(productoDTO));
 		return true;
 	
+	}
+
+	@Override
+	public Producto traerEntidadProducto(Long id) {
+		
+		if(this.productoRepo.existsById(id)){
+			return this.productoRepo.findById(id).get();
+		}
+		
+		return null;
 	}
 
 }

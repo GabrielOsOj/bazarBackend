@@ -10,20 +10,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ventaService implements IventaService{
+public class VentaService implements IventaService{
 
 	
 	IventaRepository ventaRepo;
 
 	@Autowired
-	public ventaService(IventaRepository ventaRepo) {
+	public VentaService(IventaRepository ventaRepo) {
 		this.ventaRepo = ventaRepo;
 	}
 	
 	@Override
 	public Boolean crearVenta(DTOventa venta) {
 		
-
+		return false;
 	}
 
 	

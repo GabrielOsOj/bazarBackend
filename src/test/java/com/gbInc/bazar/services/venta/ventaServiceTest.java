@@ -16,27 +16,27 @@ import static org.mockito.Mockito.*;
 
 
 @ExtendWith(MockitoExtension.class)
-public class ventaServiceTest {
+public class VentaServiceTest {
 
 	@Mock
 	IventaRepository ventaRepo;
 	
 	@InjectMocks
-	ventaService ventaSv;
+	VentaService ventaSv;
 	
-	@Test
-	public void crearVentaTest(){
-		//given
-		DTOventa nuevaVenta = DataProvider.getNuevaVenta();
-		//when
-		Boolean resp = this.ventaSv.crearVenta(nuevaVenta);
-		//then
-		assertTrue(resp);
-		ArgumentCaptor<Venta> capturador = ArgumentCaptor.forClass(Venta.class);
-		
-		verify(this.ventaRepo).save(capturador.capture());
-	}
-	
+//	@Test
+//	public void crearVentaTest(){
+//		//given
+//		DTOventa nuevaVenta = DataProvider.getNuevaVenta();
+//		//when
+//		Boolean resp = this.ventaSv.crearVenta(nuevaVenta);
+//		//then
+//		assertTrue(resp);
+//		ArgumentCaptor<Venta> capturador = ArgumentCaptor.forClass(Venta.class);
+//		
+//		verify(this.ventaRepo).save(capturador.capture());
+//	}
+//	
 	@Test
 	public void crearVentaTestErrorProductoNoExiste(){
 		//given

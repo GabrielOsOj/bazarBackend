@@ -4,17 +4,18 @@ import com.gbInc.bazar.DTO.DTOcliente;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import com.gbInc.bazar.mappers.ClienteMapper;
+import com.gbInc.bazar.persistence.models.Cliente;
 import com.gbInc.bazar.persistence.repository.IclienteRepository;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Service
-public class clienteService implements IclienteService {
+public class ClienteService implements IclienteService {
 
 	private IclienteRepository clienteRepo;
 
 	@Autowired
-	public clienteService(IclienteRepository clienteServ) {
+	public ClienteService(IclienteRepository clienteServ) {
 		this.clienteRepo = clienteServ;
 	}
 
@@ -29,11 +30,8 @@ public class clienteService implements IclienteService {
 	@Override
 	public DTOcliente traerCliente(Long id) {
 
-		if (clienteRepo.existsById(id)) {
-			return ClienteMapper.aDTO(clienteRepo.findById(id).get());
-		}
-
-		return null;
+		return ClienteMapper.aDTO(this.traerEntidadCliente(id));
+		
 	}
 
 	@Override
@@ -67,6 +65,16 @@ public class clienteService implements IclienteService {
 		this.clienteRepo.save(ClienteMapper.aCliente(cliente));
 
 		return true;
+	}
+
+	@Override
+	public Cliente traerEntidadCliente(Long id) {
+		
+		if(this.clienteRepo.existsById(id)){
+			return this.clienteRepo.findById(id).get();
+		}
+	
+		return null;
 	}
 
 }
