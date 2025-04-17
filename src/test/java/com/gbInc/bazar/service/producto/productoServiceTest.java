@@ -154,4 +154,18 @@ public class ProductoServiceTest {
 		verify(this.productoRepo).save(capturador.capture());
 	}
 
+	
+	@Test
+	public void validarProductosTest(){
+		
+		//given
+		List<Producto> productos = DataProvider.getListaProductos();
+		//when
+		when(this.productoRepo.existsById(any()))
+				.thenReturn(true);
+		Boolean resp = this.productoSv.validarProductos(productos);
+		//them
+		assertTrue(resp);
+		verify(this.productoRepo,times(productos.size())).existsById(any());
+	}
 }

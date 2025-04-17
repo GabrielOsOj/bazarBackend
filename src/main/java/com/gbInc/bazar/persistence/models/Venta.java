@@ -39,6 +39,4 @@ public class Venta {
 	@JoinColumn(name = "cliente",referencedColumnName = "id_cliente")
 	private Cliente cliente;
 
-	
-	
 }
