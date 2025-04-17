@@ -60,15 +60,14 @@ public class ClienteServiceTest {
 
 		// given
 		Long idCliente = 1L;
-
+		when(this.clienteRepo.findById(idCliente))
+				.thenReturn(Optional.ofNullable(DataProvider.getClienteUno()));
 		// when
-		when(this.clienteRepo.existsById(idCliente)).thenReturn(true);
-		when(this.clienteRepo.findById(idCliente)).thenReturn(Optional.of(DataProvider.getClienteUno()));
 		DTOcliente result = this.clienteSv.traerCliente(idCliente);
 		// then
 		assertNotNull(result);
-		verify(this.clienteRepo).existsById(idCliente);
 		verify(this.clienteRepo).findById(idCliente);
+
 	}
 
 	@Test
@@ -78,14 +77,15 @@ public class ClienteServiceTest {
 		Long idNoValido = 25L;
 
 		// when
-		when(this.clienteRepo.existsById(idNoValido)).thenReturn(false);
-
+		when(this.clienteRepo.findById(idNoValido))
+				.thenReturn(Optional.ofNullable(null));
+		
 		DTOcliente result = this.clienteSv.traerCliente(idNoValido);
 		// then
 
 		assertNull(result);
-		verify(this.clienteRepo).existsById(idNoValido);
-
+		
+		verify(this.clienteRepo).findById(idNoValido);
 	}
 
 	@Test

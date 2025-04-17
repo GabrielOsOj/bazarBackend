@@ -49,7 +49,7 @@ public class ProductoServiceTest {
 		List<DTOproducto> res = this.productoSv.traerProductos();
 
 		// then
-		assertEquals(listaVacia,res);
+		assertEquals(listaVacia, res);
 		verify(this.productoRepo).findAll();
 
 	}
@@ -59,8 +59,7 @@ public class ProductoServiceTest {
 		// given
 		Long idProducto = 1L;
 		// when
-		when(this.productoRepo.existsById(idProducto))
-				.thenReturn(true);
+		when(this.productoRepo.existsById(idProducto)).thenReturn(true);
 		when(this.productoRepo.findById(idProducto)).thenReturn(Optional.of(DataProvider.getProductoUno()));
 		DTOproducto res = this.productoSv.traerProducto(idProducto);
 		// then
@@ -77,8 +76,7 @@ public class ProductoServiceTest {
 		Long idProducto = 99L;
 
 		// when
-		when(this.productoRepo.existsById(idProducto))
-				.thenReturn(false);
+		when(this.productoRepo.existsById(idProducto)).thenReturn(false);
 		DTOproducto res = this.productoSv.traerProducto(idProducto);
 
 		// then
@@ -133,39 +131,50 @@ public class ProductoServiceTest {
 		// given
 		DTOproducto productoEdit = DataProvider.getProductoEditado();
 		// when
-		when(this.productoRepo.existsById(productoEdit.getCodigo_producto()))
-				.thenReturn(false);
+		when(this.productoRepo.existsById(productoEdit.getCodigo_producto())).thenReturn(false);
 		Boolean res = this.productoSv.editarProducto(productoEdit);
 		// then
 		assertFalse(res);
 		verify(this.productoRepo).existsById(productoEdit.getCodigo_producto());
-	
+
 	}
-	
+
 	@Test
-	public void crearProductoTest(){
-		//given
+	public void crearProductoTest() {
+		// given
 		DTOproducto nuevoProd = DataProvider.getNuevoProducto();
-		//when
+		// when
 		Boolean resp = this.productoSv.crearProducto(nuevoProd);
-		//then
+		// then
 		ArgumentCaptor<Producto> capturador = ArgumentCaptor.forClass(Producto.class);
 		assertTrue(resp);
 		verify(this.productoRepo).save(capturador.capture());
 	}
 
-	
 	@Test
-	public void validarProductosTest(){
-		
-		//given
+	public void validarProductosTest() {
+
+		// given
 		List<Producto> productos = DataProvider.getListaProductos();
-		//when
-		when(this.productoRepo.existsById(any()))
-				.thenReturn(true);
+		// when
+		when(this.productoRepo.existsById(any())).thenReturn(true);
 		Boolean resp = this.productoSv.validarProductos(productos);
-		//them
+		// them
 		assertTrue(resp);
-		verify(this.productoRepo,times(productos.size())).existsById(any());
+		verify(this.productoRepo, times(productos.size())).existsById(any());
 	}
+
+	@Test
+	public void validarProductosTestErrorProductoNoExiste() {
+
+		// given
+		List<Producto> productos = DataProvider.getListaProductos();
+		// when
+		when(this.productoRepo.existsById(any())).thenReturn(false);
+		Boolean resp = this.productoSv.validarProductos(productos);
+		// them
+		assertFalse(resp);
+		verify(this.productoRepo).existsById(any());
+	}
+
 }
