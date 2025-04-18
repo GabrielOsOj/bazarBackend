@@ -2,7 +2,7 @@ package com.gbInc.bazar.services.venta;
 
 import com.gbInc.bazar.DTO.DTOventa;
 import com.gbInc.bazar.exception.venta.VentaException;
-import com.gbInc.bazar.exception.venta.VentaExceptionCodigos;
+import com.gbInc.bazar.exception.CodigosExcepcion;
 import com.gbInc.bazar.mappers.VentaMapper;
 import com.gbInc.bazar.persistence.models.Cliente;
 import com.gbInc.bazar.persistence.models.Producto;
@@ -91,18 +91,18 @@ public class VentaService implements IventaService {
 
 	private void ventaExiste(Long idVenta) {
 		if (!this.ventaRepo.existsById(idVenta)) {
-			throw new VentaException(HttpStatus.BAD_REQUEST, VentaExceptionCodigos.BE402);
+			throw new VentaException(HttpStatus.BAD_REQUEST, CodigosExcepcion.BE302);
 		}
 	}
 
 	private void validaciones(Cliente cliente, List<Producto> productos) {
 
 		if (this.clienteSv.traerCliente(cliente.getId_cliente()) == null) {
-			throw new VentaException(HttpStatus.BAD_REQUEST, VentaExceptionCodigos.BE400);
+			throw new VentaException(HttpStatus.BAD_REQUEST, CodigosExcepcion.BE300);
 		}
 
 		if (!this.productoSv.validarProductos(productos)) {
-			throw new VentaException(HttpStatus.BAD_REQUEST, VentaExceptionCodigos.BE401);
+			throw new VentaException(HttpStatus.BAD_REQUEST, CodigosExcepcion.BE301);
 		}
 	}
 
