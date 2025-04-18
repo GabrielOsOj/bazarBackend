@@ -37,18 +37,14 @@ public class VentaService implements IventaService {
 
 	@Override
 	public void crearVenta(DTOventa venta) {
-		
+
 		this.validaciones(venta.getCliente(), venta.getListaProductos());
-		
+
 		Cliente cli = this.clienteSv.traerEntidadCliente(venta.getCliente().getId_cliente());
 
-		List<Producto> productos = venta
-				.getListaProductos()
-				.stream()
-				.map(p -> {
-					return this.productoSv.traerEntidadProducto(p.getCodigo_producto());})
-				.collect(Collectors.toList());
-				
+		List<Producto> productos = venta.getListaProductos().stream().map(p -> {
+			return this.productoSv.traerEntidadProducto(p.getCodigo_producto());
+		}).collect(Collectors.toList());
 
 		Venta nuevaVenta = Venta.builder()
 			.codigo_venta(venta.getCodigo_venta())
@@ -72,43 +68,39 @@ public class VentaService implements IventaService {
 	@Override
 	public DTOventa traerVenta(Long idVenta) {
 
-		if (this.ventaRepo.existsById(idVenta)) {
-			return VentaMapper.aDTO(this.ventaRepo.findById(idVenta).get());
-		}
-
-		return null;
+		this.ventaExiste(idVenta);
+		return VentaMapper.aDTO(this.ventaRepo.findById(idVenta).get());
 
 	}
 
 	@Override
-	public Boolean eliminarVenta(Long idVenta) {
+	public void eliminarVenta(Long idVenta) {
 
-		if (this.ventaRepo.existsById(idVenta)) {
-			this.ventaRepo.deleteById(idVenta);
-			return true;
-		}
+		this.ventaExiste(idVenta);
+		this.ventaRepo.deleteById(idVenta);
 
-		return false;
 	}
 
 	@Override
 	public void editarVenta(DTOventa ventaEditada) {
 
-		if (!this.ventaRepo.existsById(ventaEditada.getCodigo_venta())) {
-
-			throw new VentaException(HttpStatus.BAD_REQUEST, VentaExceptionCodigos.BE402);
-		}
-
+		this.ventaExiste(ventaEditada.getCodigo_venta());
 		this.crearVenta(ventaEditada);
 
 	}
 
+	private void ventaExiste(Long idVenta) {
+		if (!this.ventaRepo.existsById(idVenta)) {
+			throw new VentaException(HttpStatus.BAD_REQUEST, VentaExceptionCodigos.BE402);
+		}
+	}
+
 	private void validaciones(Cliente cliente, List<Producto> productos) {
-		
-		if (cliente == null) {
+
+		if (this.clienteSv.traerCliente(cliente.getId_cliente()) == null) {
 			throw new VentaException(HttpStatus.BAD_REQUEST, VentaExceptionCodigos.BE400);
 		}
-		
+
 		if (!this.productoSv.validarProductos(productos)) {
 			throw new VentaException(HttpStatus.BAD_REQUEST, VentaExceptionCodigos.BE401);
 		}

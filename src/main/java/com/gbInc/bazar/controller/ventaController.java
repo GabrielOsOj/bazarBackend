@@ -66,13 +66,9 @@ public class ventaController {
 	@DeleteMapping("/eliminar/{codigo_venta}")
 	public ResponseEntity<Boolean> eliminarVenta(@PathVariable Long codigo_venta) {
 
-		Boolean eliminado = this.ventaSv.eliminarVenta(codigo_venta);
-
-		if (eliminado) {
-			return new ResponseEntity<>(eliminado, HttpStatus.NO_CONTENT);
-		}
-		return new ResponseEntity<>(eliminado, HttpStatus.NOT_FOUND);
-
+		this.ventaSv.eliminarVenta(codigo_venta);
+		return new ResponseEntity<>(true, HttpStatus.NO_CONTENT);
+		
 	}
 
 }
