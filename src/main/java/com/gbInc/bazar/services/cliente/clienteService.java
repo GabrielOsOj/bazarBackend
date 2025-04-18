@@ -1,6 +1,8 @@
 package com.gbInc.bazar.services.cliente;
 
 import com.gbInc.bazar.DTO.DTOcliente;
+import com.gbInc.bazar.exception.CodigosExcepcion;
+import com.gbInc.bazar.exception.cliente.ClienteException;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import com.gbInc.bazar.mappers.ClienteMapper;
@@ -8,6 +10,7 @@ import com.gbInc.bazar.persistence.models.Cliente;
 import com.gbInc.bazar.persistence.repository.IclienteRepository;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 
 @Service
 public class ClienteService implements IclienteService {
@@ -29,50 +32,46 @@ public class ClienteService implements IclienteService {
 
 	@Override
 	public DTOcliente traerCliente(Long id) {
-
-		Cliente c = this.traerEntidadCliente(id);
-
-		return (c != null) ? ClienteMapper.aDTO(c) : null;
-
+		return ClienteMapper.aDTO(this.traerEntidadCliente(id));
 	}
 
 	@Override
-	public Boolean crearCliente(DTOcliente cliente) {
+	public void crearCliente(DTOcliente cliente) {
 
 		cliente.setId_cliente(null);
 		this.clienteRepo.save(ClienteMapper.aCliente(cliente));
-		return true;
-
+		
 	}
 
 	@Override
-	public Boolean eliminarCliente(Long id) {
+	public void eliminarCliente(Long id) {
 
-		if (!this.clienteRepo.existsById(id)) {
-			return false;
-		}
-
+		this.clienteExiste(id);
 		this.clienteRepo.deleteById(id);
-		return true;
 
 	}
 
 	@Override
-	public Boolean editarCliente(DTOcliente cliente) {
+	public void editarCliente(DTOcliente cliente) {
 
-		if (!this.clienteRepo.existsById(cliente.getId_cliente())) {
-			return false;
-		}
-
+		this.clienteExiste(cliente.getId_cliente());
 		this.clienteRepo.save(ClienteMapper.aCliente(cliente));
 
-		return true;
 	}
 
 	@Override
 	public Cliente traerEntidadCliente(Long id) {
 
-		return this.clienteRepo.findById(id).orElse(null);
+		this.clienteExiste(id);
+		return this.clienteRepo.findById(id).get();
+
+	}
+
+	private void clienteExiste(Long idCliente) {
+
+		if (!this.clienteRepo.existsById(idCliente)) {
+			throw new ClienteException(HttpStatus.BAD_REQUEST, CodigosExcepcion.BE100);
+		}
 
 	}
 

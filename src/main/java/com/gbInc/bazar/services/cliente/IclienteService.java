@@ -9,13 +9,13 @@ public interface IclienteService {
 	
 	public List<DTOcliente> traerClientes();
 	
-	public Boolean editarCliente(DTOcliente cliente);
+	public void editarCliente(DTOcliente cliente);
 	
 	public DTOcliente traerCliente(Long id);
 	
-	public Boolean crearCliente(DTOcliente cliente);
+	public void crearCliente(DTOcliente cliente);
 	
-	public Boolean eliminarCliente(Long id);
+	public void eliminarCliente(Long id);
 	
 	public Cliente traerEntidadCliente(Long id);
 	

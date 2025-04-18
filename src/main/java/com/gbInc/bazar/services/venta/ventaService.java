@@ -11,9 +11,7 @@ import com.gbInc.bazar.persistence.repository.IventaRepository;
 import com.gbInc.bazar.services.cliente.IclienteService;
 import com.gbInc.bazar.services.producto.IproductoService;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -63,6 +61,7 @@ public class VentaService implements IventaService {
 		return this.ventaRepo.findAll().stream().map(venta -> {
 			return VentaMapper.aDTO(venta);
 		}).collect(Collectors.toList());
+
 	}
 
 	@Override

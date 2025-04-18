@@ -34,7 +34,7 @@ public class clienteController {
 
 		DTOcliente cli = this.clienteSv.traerCliente(id);
 
-		if (cli!=null) {
+		if (cli != null) {
 			return new ResponseEntity<>(cli, HttpStatus.ACCEPTED);
 		}
 		else {
@@ -45,43 +45,27 @@ public class clienteController {
 	@PostMapping("/crear")
 	public ResponseEntity<Boolean> crearCliente(@RequestBody DTOcliente nuevoCliente) {
 
-		Boolean creado = this.clienteSv.crearCliente(nuevoCliente);
+		this.clienteSv.crearCliente(nuevoCliente);
 
-		if (creado) {
-			return new ResponseEntity<>(creado, HttpStatus.CREATED);
-		}
-		else {
-			return new ResponseEntity<>(creado, HttpStatus.INTERNAL_SERVER_ERROR);
-		}
+		return new ResponseEntity<>(true, HttpStatus.CREATED);
+
 	}
 
 	@PutMapping("/editar/{id_cliente}")
-	public ResponseEntity<Boolean> editarCliente(
-			@RequestBody DTOcliente cliente,
-			@PathVariable Long id_cliente) {
-		
+	public ResponseEntity<Boolean> editarCliente(@RequestBody DTOcliente cliente, @PathVariable Long id_cliente) {
+
 		cliente.setId_cliente(id_cliente);
-		Boolean editado = this.clienteSv.editarCliente(cliente);
+		this.clienteSv.editarCliente(cliente);
 
-		if (editado) {
-			return new ResponseEntity<>(editado, HttpStatus.CREATED);
-		}
-		else {
-			return new ResponseEntity<>(editado, HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-
+		return new ResponseEntity<>(true, HttpStatus.CREATED);
 	}
 
 	@DeleteMapping("/eliminar/{id_cliente}")
 	public ResponseEntity<Boolean> eliminarCliente(@PathVariable Long id_cliente) {
 
-		Boolean eliminado = this.clienteSv.eliminarCliente(id_cliente);
-		if (eliminado) {
-			return new ResponseEntity<>(eliminado, HttpStatus.CREATED);
-		}
-		else {
-			return new ResponseEntity<>(eliminado, HttpStatus.INTERNAL_SERVER_ERROR);
-		}
+		this.clienteSv.eliminarCliente(id_cliente);
+
+		return new ResponseEntity<>(true, HttpStatus.CREATED);
 	}
 
 }

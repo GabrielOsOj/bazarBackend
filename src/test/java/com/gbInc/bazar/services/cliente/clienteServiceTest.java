@@ -2,6 +2,7 @@ package com.gbInc.bazar.services.cliente;
 
 import com.gbInc.bazar.DTO.DTOcliente;
 import com.gbInc.bazar.DataProvider;
+import com.gbInc.bazar.exception.cliente.ClienteException;
 import com.gbInc.bazar.persistence.models.Cliente;
 import com.gbInc.bazar.persistence.repository.IclienteRepository;
 import java.util.List;
@@ -60,12 +61,13 @@ public class ClienteServiceTest {
 
 		// given
 		Long idCliente = 1L;
-		when(this.clienteRepo.findById(idCliente))
-				.thenReturn(Optional.ofNullable(DataProvider.getClienteUno()));
+		when(this.clienteRepo.existsById(idCliente)).thenReturn(true);
+		when(this.clienteRepo.findById(idCliente)).thenReturn(Optional.of(DataProvider.getClienteUno()));
 		// when
 		DTOcliente result = this.clienteSv.traerCliente(idCliente);
 		// then
 		assertNotNull(result);
+		verify(this.clienteRepo).existsById(idCliente);
 		verify(this.clienteRepo).findById(idCliente);
 
 	}
@@ -77,15 +79,13 @@ public class ClienteServiceTest {
 		Long idNoValido = 25L;
 
 		// when
-		when(this.clienteRepo.findById(idNoValido))
-				.thenReturn(Optional.ofNullable(null));
-		
-		DTOcliente result = this.clienteSv.traerCliente(idNoValido);
-		// then
+		when(this.clienteRepo.existsById(idNoValido)).thenReturn(false);
 
-		assertNull(result);
-		
-		verify(this.clienteRepo).findById(idNoValido);
+		assertThrows(ClienteException.class, ()->{
+			this.clienteSv.traerCliente(idNoValido);
+		});
+		// then
+		verify(this.clienteRepo).existsById(idNoValido);
 	}
 
 	@Test
@@ -93,11 +93,9 @@ public class ClienteServiceTest {
 		// given
 		DTOcliente nuevoCliente = DataProvider.getNuevoClienteDTO();
 		// when
-		Boolean res = this.clienteSv.crearCliente(nuevoCliente);
+		this.clienteSv.crearCliente(nuevoCliente);
 		// then
-
 		ArgumentCaptor<Cliente> capturador = ArgumentCaptor.forClass(Cliente.class);
-		assertTrue(res);
 		verify(this.clienteRepo).save(capturador.capture());
 		assertEquals(null, capturador.getValue().getId_cliente());
 	}
@@ -108,9 +106,8 @@ public class ClienteServiceTest {
 		Long idCliente = 1L;
 		// when
 		when(this.clienteRepo.existsById(idCliente)).thenReturn(true);
-		Boolean res = this.clienteSv.eliminarCliente(idCliente);
+		this.clienteSv.eliminarCliente(idCliente);
 		// then
-		assertTrue(res);
 		verify(this.clienteRepo).existsById(idCliente);
 		verify(this.clienteRepo).deleteById(idCliente);
 
@@ -121,10 +118,11 @@ public class ClienteServiceTest {
 		// given
 		Long idCliente = 999L;
 		// when
-		when(this.clienteRepo.existsById(idCliente)).thenReturn(false);
-		Boolean res = this.clienteSv.eliminarCliente(idCliente);
+		when(this.clienteRepo.existsById(idCliente)).thenReturn(false);		
+		assertThrows(ClienteException.class, () -> {
+			this.clienteSv.eliminarCliente(idCliente);
+		});
 		// then
-		assertFalse(res);
 		verify(this.clienteRepo).existsById(idCliente);
 	}
 
@@ -134,27 +132,27 @@ public class ClienteServiceTest {
 		DTOcliente clienteAeditar = DataProvider.getNuevoEditarCliente();
 		// when
 		when(this.clienteRepo.existsById(clienteAeditar.getId_cliente())).thenReturn(true);
-		Boolean res = this.clienteSv.editarCliente(clienteAeditar);
+		this.clienteSv.editarCliente(clienteAeditar);
 		// them
 		ArgumentCaptor<Cliente> capturador = ArgumentCaptor.forClass(Cliente.class);
-		assertTrue(res);
 		verify(this.clienteRepo).existsById(clienteAeditar.getId_cliente());
 		verify(this.clienteRepo).save(capturador.capture());
-		
+
 	}
-	
+
 	@Test
-	public void editarClienteTestError(){
+	public void editarClienteTestError() {
 		// given
 		DTOcliente clienteAeditar = DataProvider.getNuevoEditarClienteError();
 		// when
 		when(this.clienteRepo.existsById(clienteAeditar.getId_cliente())).thenReturn(false);
-		
-		Boolean res = this.clienteSv.editarCliente(clienteAeditar);
+
+		assertThrows(ClienteException.class, ()->{
+			this.clienteSv.editarCliente(clienteAeditar);
+		});
 		// them
-		assertFalse(res);
 		verify(this.clienteRepo).existsById(clienteAeditar.getId_cliente());
-		
+
 	}
 
 }
