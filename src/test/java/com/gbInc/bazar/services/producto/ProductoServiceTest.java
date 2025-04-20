@@ -2,6 +2,7 @@ package com.gbInc.bazar.service.producto;
 
 import com.gbInc.bazar.DTO.DTOproducto;
 import com.gbInc.bazar.DataProvider;
+import com.gbInc.bazar.exception.producto.ProductoException;
 import com.gbInc.bazar.persistence.models.Producto;
 import com.gbInc.bazar.persistence.repository.IproductoRepository;
 import com.gbInc.bazar.services.producto.ProductoService;
@@ -77,10 +78,12 @@ public class ProductoServiceTest {
 
 		// when
 		when(this.productoRepo.existsById(idProducto)).thenReturn(false);
-		DTOproducto res = this.productoSv.traerProducto(idProducto);
 
 		// then
-		assertNull(res);
+		assertThrows(ProductoException.class, () -> {
+			this.productoSv.traerProducto(idProducto);
+		});
+
 		verify(this.productoRepo).existsById(idProducto);
 	}
 
@@ -90,9 +93,9 @@ public class ProductoServiceTest {
 		Long idProducto = 1L;
 		// when
 		when(this.productoRepo.existsById(idProducto)).thenReturn(true);
-		Boolean res = this.productoSv.eliminarProducto(idProducto);
+
+		this.productoSv.eliminarProducto(idProducto);
 		// then
-		assertTrue(res);
 		verify(this.productoRepo).existsById(idProducto);
 		verify(this.productoRepo).deleteById(idProducto);
 	}
@@ -103,9 +106,10 @@ public class ProductoServiceTest {
 		Long idProducto = 1L;
 		// when
 		when(this.productoRepo.existsById(idProducto)).thenReturn(false);
-		Boolean res = this.productoSv.eliminarProducto(idProducto);
 		// then
-		assertFalse(res);
+		assertThrows(ProductoException.class, () -> {
+			this.productoSv.eliminarProducto(idProducto);
+		});
 		verify(this.productoRepo).existsById(idProducto);
 
 	}
@@ -116,11 +120,10 @@ public class ProductoServiceTest {
 		DTOproducto productoEdit = DataProvider.getProductoEditado();
 		// when
 		when(this.productoRepo.existsById(productoEdit.getCodigo_producto())).thenReturn(true);
-		Boolean res = this.productoSv.editarProducto(productoEdit);
+		this.productoSv.editarProducto(productoEdit);
 		// then
 		ArgumentCaptor<Producto> capturador = ArgumentCaptor.forClass(Producto.class);
 
-		assertTrue(res);
 		verify(this.productoRepo).existsById(productoEdit.getCodigo_producto());
 		verify(this.productoRepo).save(capturador.capture());
 
@@ -132,9 +135,13 @@ public class ProductoServiceTest {
 		DTOproducto productoEdit = DataProvider.getProductoEditado();
 		// when
 		when(this.productoRepo.existsById(productoEdit.getCodigo_producto())).thenReturn(false);
-		Boolean res = this.productoSv.editarProducto(productoEdit);
+		
 		// then
-		assertFalse(res);
+		assertThrows(ProductoException.class, ()->{
+		
+			this.productoSv.editarProducto(productoEdit);
+		});
+		
 		verify(this.productoRepo).existsById(productoEdit.getCodigo_producto());
 
 	}
@@ -144,10 +151,9 @@ public class ProductoServiceTest {
 		// given
 		DTOproducto nuevoProd = DataProvider.getNuevoProducto();
 		// when
-		Boolean resp = this.productoSv.crearProducto(nuevoProd);
+		this.productoSv.crearProducto(nuevoProd);
 		// then
 		ArgumentCaptor<Producto> capturador = ArgumentCaptor.forClass(Producto.class);
-		assertTrue(resp);
 		verify(this.productoRepo).save(capturador.capture());
 	}
 

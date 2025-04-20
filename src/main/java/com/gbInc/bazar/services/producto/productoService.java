@@ -1,6 +1,8 @@
 package com.gbInc.bazar.services.producto;
 
 import com.gbInc.bazar.DTO.DTOproducto;
+import com.gbInc.bazar.exception.CodigosExcepcion;
+import com.gbInc.bazar.exception.producto.ProductoException;
 import com.gbInc.bazar.mappers.ProductoMapper;
 import com.gbInc.bazar.persistence.models.Producto;
 import com.gbInc.bazar.persistence.repository.IproductoRepository;
@@ -8,6 +10,7 @@ import java.util.List;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -31,52 +34,46 @@ public class ProductoService implements IproductoService {
 	@Override
 	public DTOproducto traerProducto(Long id) {
 
-		Producto p = this.traerEntidadProducto(id);
-
-		return (p != null) ? ProductoMapper.aDTO(p) : null;
+		return ProductoMapper.aDTO(this.traerEntidadProducto(id));
 
 	}
 
 	@Override
-	public Boolean eliminarProducto(Long id) {
+	public void eliminarProducto(Long id) {
 
-		if (!this.productoRepo.existsById(id)) {
-			return false;
+		if (!this.validarProducto(id)) {
+			throw new ProductoException(HttpStatus.BAD_REQUEST, CodigosExcepcion.BE200);
 		}
-
 		this.productoRepo.deleteById(id);
-		return true;
+
 	}
 
 	@Override
-	public Boolean editarProducto(DTOproducto productoDTO) {
+	public void editarProducto(DTOproducto productoDTO) {
 
-		if (!this.productoRepo.existsById(productoDTO.getCodigo_producto())) {
-			return false;
+		if (!this.validarProducto(productoDTO.getCodigo_producto())) {
+			throw new ProductoException(HttpStatus.BAD_REQUEST, CodigosExcepcion.BE200);
 		}
-
 		this.productoRepo.save(ProductoMapper.aProducto(productoDTO));
-		return true;
 
 	}
 
 	@Override
-	public Boolean crearProducto(DTOproducto productoDTO) {
+	public void crearProducto(DTOproducto productoDTO) {
 
 		productoDTO.setCodigo_producto(null);
 		this.productoRepo.save(ProductoMapper.aProducto(productoDTO));
-		return true;
 
 	}
 
 	@Override
 	public Producto traerEntidadProducto(Long id) {
 
-		if (this.productoRepo.existsById(id)) {
-			return this.productoRepo.findById(id).get();
+		if (!this.validarProducto(id)) {
+			throw new ProductoException(HttpStatus.NOT_FOUND, CodigosExcepcion.BE200);
 		}
+		return this.productoRepo.findById(id).get();
 
-		return null;
 	}
 
 	@Override
@@ -90,6 +87,10 @@ public class ProductoService implements IproductoService {
 
 		return true;
 
+	}
+
+	private Boolean validarProducto(Long idProducto) {
+		return this.productoRepo.existsById(idProducto);
 	}
 
 }

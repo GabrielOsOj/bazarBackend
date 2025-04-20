@@ -9,9 +9,9 @@ public interface IproductoService {
 
 	public List<DTOproducto> traerProductos();
 	public DTOproducto traerProducto(Long id);
-	public Boolean eliminarProducto(Long id);
-	public Boolean editarProducto(DTOproducto productoDTO);
-	public Boolean crearProducto(DTOproducto productoDTO);
+	public void eliminarProducto(Long id);
+	public void editarProducto(DTOproducto productoDTO);
+	public void crearProducto(DTOproducto productoDTO);
 	
 	public Producto traerEntidadProducto(Long id);
 	public Boolean validarProductos(List<Producto> productos);

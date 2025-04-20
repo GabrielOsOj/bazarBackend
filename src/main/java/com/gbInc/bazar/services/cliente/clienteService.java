@@ -70,7 +70,7 @@ public class ClienteService implements IclienteService {
 	private void clienteExiste(Long idCliente) {
 
 		if (!this.clienteRepo.existsById(idCliente)) {
-			throw new ClienteException(HttpStatus.BAD_REQUEST, CodigosExcepcion.BE100);
+			throw new ClienteException(HttpStatus.NOT_FOUND, CodigosExcepcion.BE100);
 		}
 
 	}

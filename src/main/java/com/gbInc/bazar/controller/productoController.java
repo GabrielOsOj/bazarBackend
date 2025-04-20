@@ -35,13 +35,7 @@ public class productoController {
 	public ResponseEntity<DTOproducto> traerProducto(@PathVariable Long idProducto) {
 
 		DTOproducto respuesta = this.productoSv.traerProducto(idProducto);
-
-		if (respuesta == null) {
-			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-		}
-		else {
-			return new ResponseEntity<>(respuesta, HttpStatus.OK);
-		}
+		return new ResponseEntity<>(respuesta, HttpStatus.OK);
 
 	}
 
@@ -55,26 +49,17 @@ public class productoController {
 	public ResponseEntity<Boolean> editarProducto(@PathVariable Long idProducto, @RequestBody DTOproducto producto) {
 
 		producto.setCodigo_producto(idProducto);
-		Boolean editado = this.productoSv.editarProducto(producto);
+		this.productoSv.editarProducto(producto);
+		return new ResponseEntity<>(true, HttpStatus.NO_CONTENT);
 
-		if (editado) {
-			return new ResponseEntity<>(true, HttpStatus.NO_CONTENT);
-		}
-		else {
-			return new ResponseEntity<>(false, HttpStatus.NOT_FOUND);
-		}
 	}
 
 	@DeleteMapping("/eliminar/{idProducto}")
-	public ResponseEntity<Boolean> eliminarProducto(
-	@PathVariable Long idProducto){
-		
-		Boolean eliminado = this.productoSv.eliminarProducto(idProducto);
-		
-		if(eliminado){
-			return new ResponseEntity<>(true,HttpStatus.NO_CONTENT);
-		}else{
-			return new ResponseEntity<>(false,HttpStatus.NOT_FOUND);
-		}
+	public ResponseEntity<Boolean> eliminarProducto(@PathVariable Long idProducto) {
+
+		this.productoSv.eliminarProducto(idProducto);
+		return new ResponseEntity<>(true, HttpStatus.NO_CONTENT);
+
 	}
+
 }
