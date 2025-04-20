@@ -3,7 +3,9 @@ package com.gbInc.bazar.controller;
 import com.gbInc.bazar.DTO.DTOclienteMayorCompra;
 import com.gbInc.bazar.DTO.DTOproducto;
 import com.gbInc.bazar.DTO.DTOventa;
+import com.gbInc.bazar.DTO.DTOventaYmontoDia;
 import com.gbInc.bazar.services.venta.IventaService;
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -81,5 +84,13 @@ public class ventaController {
 		
 		return new ResponseEntity<>(this.ventaSv.traerClienteMayorCompra(),HttpStatus.OK);
 
+	}
+	
+	@GetMapping("/")
+	public ResponseEntity<DTOventaYmontoDia> traerVentasSegunDia(
+	@RequestParam LocalDate fecha){
+		
+		return new ResponseEntity<>(this.ventaSv.traerVentasSegunFecha(fecha),HttpStatus.FOUND);
+		
 	}
 }

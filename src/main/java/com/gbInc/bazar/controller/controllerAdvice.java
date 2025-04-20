@@ -1,10 +1,8 @@
 package com.gbInc.bazar.controller;
 
 import com.gbInc.bazar.exception.venta.VentaException;
-import com.gbInc.bazar.exception.CodigosExcepcion;
 import com.gbInc.bazar.exception.cliente.ClienteException;
 import com.gbInc.bazar.exception.producto.ProductoException;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;

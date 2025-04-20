@@ -3,6 +3,7 @@ package com.gbInc.bazar.services.venta;
 import com.gbInc.bazar.DTO.DTOclienteMayorCompra;
 import com.gbInc.bazar.DTO.DTOproducto;
 import com.gbInc.bazar.DTO.DTOventa;
+import com.gbInc.bazar.DTO.DTOventaYmontoDia;
 import com.gbInc.bazar.exception.venta.VentaException;
 import com.gbInc.bazar.exception.CodigosExcepcion;
 import com.gbInc.bazar.mappers.ProductoMapper;
@@ -13,6 +14,8 @@ import com.gbInc.bazar.persistence.models.Venta;
 import com.gbInc.bazar.persistence.repository.IventaRepository;
 import com.gbInc.bazar.services.cliente.IclienteService;
 import com.gbInc.bazar.services.producto.IproductoService;
+import java.time.LocalDate;
+import java.time.Month;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -143,6 +146,12 @@ public class VentaService implements IventaService {
 				.nombreCliente(ventaMax.getCliente().getNombre())
 				.apellidoCliente(ventaMax.getCliente().getApellido())
 				.build();
+	}
+
+	@Override
+	public DTOventaYmontoDia traerVentasSegunFecha(LocalDate fecha) {
+		return this.ventaRepo.ventasDeUnDia(fecha);
+	
 	}
 	
 }
