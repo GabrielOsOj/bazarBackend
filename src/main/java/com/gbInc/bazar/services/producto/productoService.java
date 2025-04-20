@@ -93,4 +93,12 @@ public class ProductoService implements IproductoService {
 		return this.productoRepo.existsById(idProducto);
 	}
 
+	@Override
+	public List<DTOproducto> faltaStock() {
+		return this.productoRepo.faltaStock()
+				.stream()
+				.map(p->ProductoMapper.aDTO(p))
+				.collect(Collectors.toList());
+	}
+
 }

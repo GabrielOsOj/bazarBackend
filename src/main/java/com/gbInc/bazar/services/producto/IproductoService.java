@@ -15,4 +15,6 @@ public interface IproductoService {
 	
 	public Producto traerEntidadProducto(Long id);
 	public Boolean validarProductos(List<Producto> productos);
+	
+	public List<DTOproducto> faltaStock();
 }

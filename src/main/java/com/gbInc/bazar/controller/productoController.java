@@ -62,4 +62,9 @@ public class productoController {
 
 	}
 
+	@GetMapping("/falta_stock")
+	public ResponseEntity<List<DTOproducto>> faltaDeStock() {
+		return new ResponseEntity<>(this.productoSv.faltaStock(), HttpStatus.OK);
+	}
+
 }
