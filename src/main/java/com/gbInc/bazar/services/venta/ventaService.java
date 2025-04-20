@@ -1,5 +1,6 @@
 package com.gbInc.bazar.services.venta;
 
+import com.gbInc.bazar.DTO.DTOclienteMayorCompra;
 import com.gbInc.bazar.DTO.DTOproducto;
 import com.gbInc.bazar.DTO.DTOventa;
 import com.gbInc.bazar.exception.venta.VentaException;
@@ -42,9 +43,10 @@ public class VentaService implements IventaService {
 
 		Cliente cli = this.clienteSv.traerEntidadCliente(venta.getCliente().getId_cliente());
 
-		List<Producto> productos = venta.getListaProductos().stream().map(p -> {
-			return this.productoSv.traerEntidadProducto(p.getCodigo_producto());
-		}).collect(Collectors.toList());
+		List<Producto> productos = venta.getListaProductos()
+			.stream()
+			.map(p -> this.productoSv.traerEntidadProducto(p.getCodigo_producto()))
+			.collect(Collectors.toList());
 
 		Venta nuevaVenta = Venta.builder()
 			.codigo_venta(venta.getCodigo_venta())
@@ -89,18 +91,18 @@ public class VentaService implements IventaService {
 		this.crearVenta(ventaEditada);
 
 	}
-	
+
 	@Override
 	public List<DTOproducto> listaDeProductos(Long idVenta) {
 		this.ventaExiste(idVenta);
-		return this.traerVenta(idVenta).getListaProductos()
-				.stream()
-				.map(p-> ProductoMapper.aDTO(p))
-				.collect(Collectors.toList());
-	
+		return this.traerVenta(idVenta)
+			.getListaProductos()
+			.stream()
+			.map(p -> ProductoMapper.aDTO(p))
+			.collect(Collectors.toList());
+
 	}
 	
-
 	private void ventaExiste(Long idVenta) {
 		if (!this.ventaRepo.existsById(idVenta)) {
 			throw new VentaException(HttpStatus.NOT_FOUND, CodigosExcepcion.BE302);
@@ -109,15 +111,38 @@ public class VentaService implements IventaService {
 
 	private void validaciones(Cliente cliente, List<Producto> productos) {
 
-		if (this.clienteSv.traerCliente(cliente.getId_cliente()) == null) {
-			throw new VentaException(HttpStatus.BAD_REQUEST, CodigosExcepcion.BE300);
-		}
+		this.validarCliente(cliente);
+		this.validarProductos(productos);
 
+	}
+
+	private void validarCliente(Cliente cliente) {
+		this.clienteSv.traerEntidadCliente(cliente.getId_cliente());
+		
+	}
+
+	private void validarProductos(List<Producto> productos) {
 		if (!this.productoSv.validarProductos(productos)) {
 			throw new VentaException(HttpStatus.BAD_REQUEST, CodigosExcepcion.BE301);
 		}
+
 	}
 
+	@Override
+	public DTOclienteMayorCompra traerClienteMayorCompra() {
+				
+		Venta ventaMax = this.ventaRepo.traerMayorVenta();
 
-
+		if(ventaMax==null){
+			throw new VentaException(HttpStatus.NOT_FOUND, CodigosExcepcion.BE303);
+		}
+		return DTOclienteMayorCompra.builder()
+				.codigo_venta(ventaMax.getCodigo_venta())
+				.total(ventaMax.getTotal())
+				.cantidadProductos(ventaMax.getListaProductos().size())
+				.nombreCliente(ventaMax.getCliente().getNombre())
+				.apellidoCliente(ventaMax.getCliente().getApellido())
+				.build();
+	}
+	
 }

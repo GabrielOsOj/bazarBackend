@@ -1,5 +1,6 @@
 package com.gbInc.bazar.controller;
 
+import com.gbInc.bazar.DTO.DTOclienteMayorCompra;
 import com.gbInc.bazar.DTO.DTOproducto;
 import com.gbInc.bazar.DTO.DTOventa;
 import com.gbInc.bazar.services.venta.IventaService;
@@ -36,11 +37,6 @@ public class ventaController {
 	public ResponseEntity<DTOventa> traerVenta(@PathVariable Long codigo_venta) {
 
 		DTOventa venta = this.ventaSv.traerVenta(codigo_venta);
-
-		if (venta == null) {
-			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-		}
-
 		return new ResponseEntity<>(venta, HttpStatus.FOUND);
 
 	}
@@ -80,4 +76,10 @@ public class ventaController {
 	
 	}
 
+	@GetMapping("/mayor_venta")
+	public ResponseEntity<DTOclienteMayorCompra> traerMayorVenta(){
+		
+		return new ResponseEntity<>(this.ventaSv.traerClienteMayorCompra(),HttpStatus.OK);
+
+	}
 }

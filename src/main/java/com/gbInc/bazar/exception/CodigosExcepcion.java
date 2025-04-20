@@ -17,6 +17,6 @@ public class CodigosExcepcion {
 	public static final String BE300 = "Error con el cliente";
 	public static final String BE301 = "Error con el producto";
 	public static final String BE302 = "No existe una venta asociada a ese id";
-	
+	public static final String BE303 = "No hay ventas registradas en la base de datos";
 			
 }

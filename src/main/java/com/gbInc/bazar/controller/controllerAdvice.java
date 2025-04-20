@@ -19,13 +19,13 @@ public class controllerAdvice {
 	}
 
 	@ExceptionHandler(value = ClienteException.class)
-	public ResponseEntity<String> ClienteExceptionHandler(VentaException ex) {
+	public ResponseEntity<String> ClienteExceptionHandler(ClienteException ex) {
 
 		return new ResponseEntity<>(ex.getMessage(), ex.getCodigo());
 	}
 
 	@ExceptionHandler(value = ProductoException.class)
-	public ResponseEntity<String> ProductoExceptionHandler(VentaException ex) {
+	public ResponseEntity<String> ProductoExceptionHandler(ProductoException ex) {
 
 		return new ResponseEntity<>(ex.getMessage(), ex.getCodigo());
 	}

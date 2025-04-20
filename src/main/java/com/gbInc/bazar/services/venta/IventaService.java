@@ -1,5 +1,6 @@
 package com.gbInc.bazar.services.venta;
 
+import com.gbInc.bazar.DTO.DTOclienteMayorCompra;
 import com.gbInc.bazar.DTO.DTOproducto;
 import com.gbInc.bazar.DTO.DTOventa;
 import java.util.List;
@@ -15,4 +16,5 @@ public interface IventaService {
 	public void editarVenta(DTOventa ventaEditada);
 	
 	public List<DTOproducto> listaDeProductos(Long idVenta);
+	public DTOclienteMayorCompra traerClienteMayorCompra();
 }

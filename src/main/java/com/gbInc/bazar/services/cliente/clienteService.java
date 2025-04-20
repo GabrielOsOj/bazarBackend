@@ -72,7 +72,6 @@ public class ClienteService implements IclienteService {
 		if (!this.clienteRepo.existsById(idCliente)) {
 			throw new ClienteException(HttpStatus.NOT_FOUND, CodigosExcepcion.BE100);
 		}
-
 	}
 
 }
