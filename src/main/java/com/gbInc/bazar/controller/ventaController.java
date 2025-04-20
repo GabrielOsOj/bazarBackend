@@ -1,5 +1,6 @@
 package com.gbInc.bazar.controller;
 
+import com.gbInc.bazar.DTO.DTOproducto;
 import com.gbInc.bazar.DTO.DTOventa;
 import com.gbInc.bazar.services.venta.IventaService;
 import java.util.List;
@@ -69,6 +70,14 @@ public class ventaController {
 		this.ventaSv.eliminarVenta(codigo_venta);
 		return new ResponseEntity<>(true, HttpStatus.NO_CONTENT);
 		
+	}
+	
+	@GetMapping("/productos/{codigo_venta}")
+	public ResponseEntity<List<DTOproducto>> traerProductosDeVenta(
+	@PathVariable Long codigo_venta ){
+	
+		return new ResponseEntity<>(this.ventaSv.listaDeProductos(codigo_venta),HttpStatus.OK);
+	
 	}
 
 }

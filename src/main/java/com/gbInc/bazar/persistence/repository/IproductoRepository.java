@@ -11,6 +11,5 @@ public interface IproductoRepository extends JpaRepository<Producto, Long> {
 
 	@Query("SELECT p FROM Producto p WHERE p.cantidad_disponible < 5")
 	public List<Producto> faltaStock();
-
 	
 }

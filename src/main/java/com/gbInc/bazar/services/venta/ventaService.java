@@ -1,8 +1,10 @@
 package com.gbInc.bazar.services.venta;
 
+import com.gbInc.bazar.DTO.DTOproducto;
 import com.gbInc.bazar.DTO.DTOventa;
 import com.gbInc.bazar.exception.venta.VentaException;
 import com.gbInc.bazar.exception.CodigosExcepcion;
+import com.gbInc.bazar.mappers.ProductoMapper;
 import com.gbInc.bazar.mappers.VentaMapper;
 import com.gbInc.bazar.persistence.models.Cliente;
 import com.gbInc.bazar.persistence.models.Producto;
@@ -87,10 +89,21 @@ public class VentaService implements IventaService {
 		this.crearVenta(ventaEditada);
 
 	}
+	
+	@Override
+	public List<DTOproducto> listaDeProductos(Long idVenta) {
+		this.ventaExiste(idVenta);
+		return this.traerVenta(idVenta).getListaProductos()
+				.stream()
+				.map(p-> ProductoMapper.aDTO(p))
+				.collect(Collectors.toList());
+	
+	}
+	
 
 	private void ventaExiste(Long idVenta) {
 		if (!this.ventaRepo.existsById(idVenta)) {
-			throw new VentaException(HttpStatus.BAD_REQUEST, CodigosExcepcion.BE302);
+			throw new VentaException(HttpStatus.NOT_FOUND, CodigosExcepcion.BE302);
 		}
 	}
 
@@ -104,5 +117,7 @@ public class VentaService implements IventaService {
 			throw new VentaException(HttpStatus.BAD_REQUEST, CodigosExcepcion.BE301);
 		}
 	}
+
+
 
 }
