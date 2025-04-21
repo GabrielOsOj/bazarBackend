@@ -46,7 +46,6 @@ public class ventaController {
 
 	@PostMapping("/crear")
 	public ResponseEntity<Boolean> crearVenta(@RequestBody DTOventa venta) {
-
 		venta.setCodigo_venta(null);
 		this.ventaSv.crearVenta(venta);
 		return new ResponseEntity<>(true, HttpStatus.CREATED);

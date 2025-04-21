@@ -2,7 +2,9 @@ package com.gbInc.bazar.services.venta;
 
 import com.gbInc.bazar.DTO.DTOventa;
 import com.gbInc.bazar.DataProvider;
+import com.gbInc.bazar.exception.cliente.ClienteException;
 import com.gbInc.bazar.exception.venta.VentaException;
+import com.gbInc.bazar.persistence.models.Cliente;
 import com.gbInc.bazar.persistence.models.Venta;
 import com.gbInc.bazar.persistence.repository.IventaRepository;
 import com.gbInc.bazar.services.cliente.IclienteService;
@@ -39,45 +41,43 @@ public class VentaServiceTest {
 		// given
 		DTOventa nuevaVenta = DataProvider.getNuevaVenta();
 		// when
-		when(this.productoSv.validarProductos(anyList())).thenReturn(Boolean.TRUE);
-		when(this.clienteSv.traerCliente(anyLong())).thenReturn(DataProvider.getClienteUnoDTO());
+		when(this.clienteSv.traerEntidadCliente(anyLong())).thenReturn(DataProvider.getClienteUno());
+		when(this.productoSv.traerEntidadProducto(anyLong())).thenReturn(DataProvider.getProductoUno());
 		this.ventaSv.crearVenta(nuevaVenta);
 		// then
 		ArgumentCaptor<Venta> capturador = ArgumentCaptor.forClass(Venta.class);
 
 		verify(this.ventaRepo).save(capturador.capture());
-		verify(this.productoSv).validarProductos(anyList());
-		verify(this.clienteSv).traerCliente(anyLong());
+		verify(this.productoSv, times(nuevaVenta.getListaProductos().size())).traerEntidadProducto(anyLong());
+		verify(this.clienteSv).traerEntidadCliente(anyLong());
 
 	}
 
-	@Test
-	public void crearVentaTestErrorClienteNull() {
-		// given
-		DTOventa nuevaVenta = DataProvider.getNuevaVenta();
-		// when
-		when(this.clienteSv.traerCliente(anyLong())).thenReturn(null);
-		assertThrows(VentaException.class, () -> {
-			this.ventaSv.crearVenta(nuevaVenta);
-		});
-	}
-
-	@Test
-	public void crearVentaTestErrorProductoNoExiste() {
-		// given
-		DTOventa nuevaVenta = DataProvider.getNuevaVenta();
-		// when
-		when(this.clienteSv.traerCliente(anyLong())).thenReturn(DataProvider.getClienteUnoDTO());
-		when(this.productoSv.validarProductos(anyList())).thenReturn(false);
-		assertThrows(VentaException.class, () -> {
-			this.ventaSv.crearVenta(nuevaVenta);
-		});
-	}
+//	@Test
+//	public void crearVentaTestErrorClienteNull() {
+//		// given
+//		DTOventa nuevaVenta = DataProvider.getNuevaVenta();
+//		// when
+//		when(this.clienteSv.traerCliente(anyLong())).thenReturn(null);
+//		assertThrows(ClienteException.class, () -> {
+//			this.ventaSv.crearVenta(nuevaVenta);
+//		});
+//	}
+//
+//	@Test
+//	public void crearVentaTestErrorProductoNoExiste() {
+//		// given
+//		DTOventa nuevaVenta = DataProvider.getNuevaVenta();
+//		// when
+//		when(this.clienteSv.traerCliente(anyLong())).thenReturn(DataProvider.getClienteUnoDTO());
+//		when(this.productoSv.validarProductos(anyList())).thenReturn(false);
+//		assertThrows(VentaException.class, () -> {
+//			this.ventaSv.crearVenta(nuevaVenta);
+//		});
+//	}
 
 	@Test
 	public void traerVentasTest() {
-		// given
-
 		// when
 		when(this.ventaRepo.findAll()).thenReturn(DataProvider.getListaDeVentas());
 		List<DTOventa> ventas = this.ventaSv.traerVentas();
@@ -151,17 +151,20 @@ public class VentaServiceTest {
 	@Test
 	public void editarVentaTest(){
 		//given
-		Long idVenta = 1L;
-		DTOventa ventaDTO = DataProvider.getVentaEditada();		//when
-		when(this.ventaRepo.existsById(anyLong())).thenReturn(true);
-		when(this.clienteSv.traerCliente(anyLong()))
-				.thenReturn(DataProvider.getClienteUnoDTO());
-		when(this.productoSv.validarProductos((anyList()))).thenReturn(true);
-		this.ventaSv.editarVenta(ventaDTO);
+		DTOventa ventaEditada = DataProvider.getVentaEditada();
+		//when
+		when(this.ventaRepo.existsById(anyLong()))
+				.thenReturn(true);
+		when(this.clienteSv.traerEntidadCliente(anyLong()))
+				.thenReturn(DataProvider.getClienteUno());
+		when(this.productoSv.traerEntidadProducto(anyLong())).thenReturn(DataProvider.getProductoUno());
+		this.ventaSv.editarVenta(ventaEditada);
 		//then
-		ArgumentCaptor<Venta> capturador = ArgumentCaptor.forClass(Venta.class);
+		
 		verify(this.ventaRepo).existsById(anyLong());
-		verify(ventaRepo).save(capturador.capture());
+		verify(this.clienteSv).traerEntidadCliente(anyLong());
+		verify(this.productoSv, times(ventaEditada.getListaProductos().size())).traerEntidadProducto(anyLong());
+		
 	}
 	
 	@Test

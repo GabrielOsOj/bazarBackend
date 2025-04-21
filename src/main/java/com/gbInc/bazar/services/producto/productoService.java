@@ -7,7 +7,6 @@ import com.gbInc.bazar.mappers.ProductoMapper;
 import com.gbInc.bazar.persistence.models.Producto;
 import com.gbInc.bazar.persistence.repository.IproductoRepository;
 import java.util.List;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -41,9 +40,7 @@ public class ProductoService implements IproductoService {
 	@Override
 	public void eliminarProducto(Long id) {
 
-		if (!this.validarProducto(id)) {
-			throw new ProductoException(HttpStatus.BAD_REQUEST, CodigosExcepcion.BE200);
-		}
+		this.productoExiste(id);
 		this.productoRepo.deleteById(id);
 
 	}
@@ -51,9 +48,7 @@ public class ProductoService implements IproductoService {
 	@Override
 	public void editarProducto(DTOproducto productoDTO) {
 
-		if (!this.validarProducto(productoDTO.getCodigo_producto())) {
-			throw new ProductoException(HttpStatus.BAD_REQUEST, CodigosExcepcion.BE200);
-		}
+		this.productoExiste(productoDTO.getCodigo_producto());
 		this.productoRepo.save(ProductoMapper.aProducto(productoDTO));
 
 	}
@@ -69,9 +64,7 @@ public class ProductoService implements IproductoService {
 	@Override
 	public Producto traerEntidadProducto(Long id) {
 
-		if (!this.validarProducto(id)) {
-			throw new ProductoException(HttpStatus.NOT_FOUND, CodigosExcepcion.BE200);
-		}
+		this.productoExiste(id);
 		return this.productoRepo.findById(id).get();
 
 	}
@@ -84,21 +77,41 @@ public class ProductoService implements IproductoService {
 				return false;
 			}
 		}
-
 		return true;
-
 	}
 
-	private Boolean validarProducto(Long idProducto) {
-		return this.productoRepo.existsById(idProducto);
+	private void productoExiste(Long idProducto) {
+		if (!this.productoRepo.existsById(idProducto)) {
+			throw new ProductoException(HttpStatus.NOT_FOUND, CodigosExcepcion.BE200);
+		}
 	}
 
 	@Override
 	public List<DTOproducto> faltaStock() {
-		return this.productoRepo.faltaStock()
-				.stream()
-				.map(p->ProductoMapper.aDTO(p))
-				.collect(Collectors.toList());
+		return this.productoRepo.faltaStock().stream().map(p -> ProductoMapper.aDTO(p)).collect(Collectors.toList());
+	}
+
+	private void validarStock(Double cantidadDisponible, Double cantidadComprada, String nombre) {
+		if (cantidadDisponible < cantidadComprada) {
+			throw new ProductoException(HttpStatus.BAD_REQUEST, CodigosExcepcion.BE201 + ": " + nombre);
+		}
+
+	}
+
+	@Override
+	public void actualizarStock(List<DTOproducto> productos) {
+
+		List<Producto> productosValidos = productos.stream().map(p -> {
+			DTOproducto dtoP = this.traerProducto(p.getCodigo_producto());
+			this.validarStock(dtoP.getCantidad_disponible(), p.getCantidad_comprada(), dtoP.getNombre());
+			dtoP.setCantidad_comprada(p.getCantidad_comprada());
+			return dtoP;
+		}).map(p -> {
+			p.setCantidad_disponible(p.getCantidad_disponible() - p.getCantidad_comprada());
+			return ProductoMapper.aProducto(p);
+		}).collect(Collectors.toList());
+
+		this.productoRepo.saveAll(productosValidos);
 	}
 
 }

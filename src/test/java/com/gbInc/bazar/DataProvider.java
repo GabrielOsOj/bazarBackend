@@ -60,6 +60,16 @@ public class DataProvider {
 				new Producto(6L, "Fuente para horno", "Cerámica y Fuego", 4500D, 8D));
 	}
 
+	public static List<DTOproducto> getListaProductosDTO() {
+
+		return List.of(new DTOproducto(1L, "Vaso plástico 350cc", "Colombraro", 1000D, 10D),
+				new DTOproducto(2L, "Plato hondo cerámica", "Cerámicas del Sur", 2500D, 20D),
+				new DTOproducto(3L, "Taza de vidrio", "Vidrios Argentinos", 1800D, 15D),
+				new DTOproducto(4L, "Cubiertos acero inox", "AceroPlus", 3200D, 50D),
+				new DTOproducto(5L, "Jarra medidora 1L", "Plásticos Norte", 1200D, 25D),
+				new DTOproducto(6L, "Fuente para horno", "Cerámica y Fuego", 4500D, 8D));
+	}
+
 	public static List<Producto> getListaProductosVacia() {
 		return List.of();
 	}
@@ -87,8 +97,8 @@ public class DataProvider {
 			.codigo_venta(null)
 			.fecha_venta(LocalDate.of(2025, 04, 15))
 			.total(40000D)
-			.listaProductos(getListaProductos())
-			.cliente(getClienteUno())
+			.listaProductos(getListaProductosDTO())
+			.cliente(getClienteUnoDTO())
 			.build();
 	}
 
@@ -97,7 +107,7 @@ public class DataProvider {
 			.codigo_venta(null)
 			.fecha_venta(LocalDate.of(2025, 04, 15))
 			.total(40000D)
-			.listaProductos(getListaProductos())
+			.listaProductos(getListaProductosDTO())
 			.cliente(null)
 			.build();
 	}
@@ -112,11 +122,12 @@ public class DataProvider {
 		return List.of();
 	}
 
-	public static Venta getVentaUno(){
+	public static Venta getVentaUno() {
 		return getListaDeVentas().get(0);
 	}
-	
-	public static DTOventa getVentaEditada(){
-		return new DTOventa(3L, LocalDate.now(), 4000D, getListaProductos(), getListaClientes().get(1));
+
+	public static DTOventa getVentaEditada() {
+		return new DTOventa(3L, LocalDate.now(), 4000D, getListaProductosDTO(), getClienteUnoDTO());
 	}
+
 }

@@ -17,4 +17,5 @@ public interface IproductoService {
 	public Boolean validarProductos(List<Producto> productos);
 	
 	public List<DTOproducto> faltaStock();
+	public void actualizarStock(List<DTOproducto> producto);
 }

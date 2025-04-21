@@ -22,7 +22,7 @@ public class DTOventa {
 	private LocalDate fecha_venta;
 	private Double total;
 	
-	private List<Producto> listaProductos;
-	private Cliente cliente;
+	private List<DTOproducto> listaProductos;
+	private DTOcliente cliente;
 	
 }

@@ -42,15 +42,16 @@ public class VentaService implements IventaService {
 	@Override
 	public void crearVenta(DTOventa venta) {
 
-		this.validaciones(venta.getCliente(), venta.getListaProductos());
-
 		Cliente cli = this.clienteSv.traerEntidadCliente(venta.getCliente().getId_cliente());
+
+		this.productoSv.actualizarStock(venta.getListaProductos());
 
 		List<Producto> productos = venta.getListaProductos()
 			.stream()
 			.map(p -> this.productoSv.traerEntidadProducto(p.getCodigo_producto()))
 			.collect(Collectors.toList());
 
+		
 		Venta nuevaVenta = Venta.builder()
 			.codigo_venta(venta.getCodigo_venta())
 			.fecha_venta(venta.getFecha_venta())
@@ -61,7 +62,7 @@ public class VentaService implements IventaService {
 
 		this.ventaRepo.save(nuevaVenta);
 	}
-
+	
 	@Override
 	public List<DTOventa> traerVentas() {
 
@@ -99,36 +100,13 @@ public class VentaService implements IventaService {
 	public List<DTOproducto> listaDeProductos(Long idVenta) {
 		this.ventaExiste(idVenta);
 		return this.traerVenta(idVenta)
-			.getListaProductos()
-			.stream()
-			.map(p -> ProductoMapper.aDTO(p))
-			.collect(Collectors.toList());
-
+			.getListaProductos();
 	}
 	
 	private void ventaExiste(Long idVenta) {
 		if (!this.ventaRepo.existsById(idVenta)) {
 			throw new VentaException(HttpStatus.NOT_FOUND, CodigosExcepcion.BE302);
 		}
-	}
-
-	private void validaciones(Cliente cliente, List<Producto> productos) {
-
-		this.validarCliente(cliente);
-		this.validarProductos(productos);
-
-	}
-
-	private void validarCliente(Cliente cliente) {
-		this.clienteSv.traerEntidadCliente(cliente.getId_cliente());
-		
-	}
-
-	private void validarProductos(List<Producto> productos) {
-		if (!this.productoSv.validarProductos(productos)) {
-			throw new VentaException(HttpStatus.BAD_REQUEST, CodigosExcepcion.BE301);
-		}
-
 	}
 
 	@Override
