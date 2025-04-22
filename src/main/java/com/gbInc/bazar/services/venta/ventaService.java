@@ -98,7 +98,6 @@ public class VentaService implements IventaService {
 
 	@Override
 	public List<DTOproducto> listaDeProductos(Long idVenta) {
-		this.ventaExiste(idVenta);
 		return this.traerVenta(idVenta)
 			.getListaProductos();
 	}
@@ -128,8 +127,14 @@ public class VentaService implements IventaService {
 
 	@Override
 	public DTOventaYmontoDia traerVentasSegunFecha(LocalDate fecha) {
-		return this.ventaRepo.ventasDeUnDia(fecha);
-	
+		DTOventaYmontoDia ventaYmonto = this.ventaRepo.ventasDeUnDia(fecha);
+		
+		if(ventaYmonto == null){
+			throw new VentaException(HttpStatus.NOT_FOUND,
+			CodigosExcepcion.BE303);
+		}
+		
+		return ventaYmonto;
 	}
 	
 }

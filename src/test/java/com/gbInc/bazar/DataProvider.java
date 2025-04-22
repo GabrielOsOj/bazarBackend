@@ -3,6 +3,7 @@ package com.gbInc.bazar;
 import com.gbInc.bazar.DTO.DTOcliente;
 import com.gbInc.bazar.DTO.DTOproducto;
 import com.gbInc.bazar.DTO.DTOventa;
+import com.gbInc.bazar.DTO.DTOventaYmontoDia;
 import com.gbInc.bazar.persistence.models.Cliente;
 import com.gbInc.bazar.persistence.models.Producto;
 import com.gbInc.bazar.persistence.models.Venta;
@@ -173,6 +174,16 @@ public class DataProvider {
 
 	public static DTOventa getVentaEditada() {
 		return new DTOventa(3L, LocalDate.now(), 4000D, getListaProductosDTO(), getClienteUnoDTO());
+	}
+	
+	public static DTOventaYmontoDia getVentaYmontoDTO(){
+	
+		return DTOventaYmontoDia.builder()
+				.fecha(LocalDate.now())
+				.cantidadVentasDia(20L)
+				.montoDelDia(20000D)
+				.build();
+	
 	}
 
 }

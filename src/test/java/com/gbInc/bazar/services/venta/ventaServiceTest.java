@@ -1,6 +1,9 @@
 package com.gbInc.bazar.services.venta;
 
+import com.gbInc.bazar.DTO.DTOclienteMayorCompra;
+import com.gbInc.bazar.DTO.DTOproducto;
 import com.gbInc.bazar.DTO.DTOventa;
+import com.gbInc.bazar.DTO.DTOventaYmontoDia;
 import com.gbInc.bazar.DataProvider;
 import com.gbInc.bazar.exception.cliente.ClienteException;
 import com.gbInc.bazar.exception.venta.VentaException;
@@ -9,6 +12,8 @@ import com.gbInc.bazar.persistence.models.Venta;
 import com.gbInc.bazar.persistence.repository.IventaRepository;
 import com.gbInc.bazar.services.cliente.IclienteService;
 import com.gbInc.bazar.services.producto.IproductoService;
+import java.time.LocalDate;
+import java.time.Month;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
@@ -52,29 +57,6 @@ public class VentaServiceTest {
 		verify(this.clienteSv).traerEntidadCliente(anyLong());
 
 	}
-
-//	@Test
-//	public void crearVentaTestErrorClienteNull() {
-//		// given
-//		DTOventa nuevaVenta = DataProvider.getNuevaVenta();
-//		// when
-//		when(this.clienteSv.traerCliente(anyLong())).thenReturn(null);
-//		assertThrows(ClienteException.class, () -> {
-//			this.ventaSv.crearVenta(nuevaVenta);
-//		});
-//	}
-//
-//	@Test
-//	public void crearVentaTestErrorProductoNoExiste() {
-//		// given
-//		DTOventa nuevaVenta = DataProvider.getNuevaVenta();
-//		// when
-//		when(this.clienteSv.traerCliente(anyLong())).thenReturn(DataProvider.getClienteUnoDTO());
-//		when(this.productoSv.validarProductos(anyList())).thenReturn(false);
-//		assertThrows(VentaException.class, () -> {
-//			this.ventaSv.crearVenta(nuevaVenta);
-//		});
-//	}
 
 	@Test
 	public void traerVentasTest() {
@@ -149,34 +131,111 @@ public class VentaServiceTest {
 	}
 
 	@Test
-	public void editarVentaTest(){
-		//given
+	public void editarVentaTest() {
+		// given
 		DTOventa ventaEditada = DataProvider.getVentaEditada();
-		//when
-		when(this.ventaRepo.existsById(anyLong()))
-				.thenReturn(true);
-		when(this.clienteSv.traerEntidadCliente(anyLong()))
-				.thenReturn(DataProvider.getClienteUno());
+		// when
+		when(this.ventaRepo.existsById(anyLong())).thenReturn(true);
+		when(this.clienteSv.traerEntidadCliente(anyLong())).thenReturn(DataProvider.getClienteUno());
 		when(this.productoSv.traerEntidadProducto(anyLong())).thenReturn(DataProvider.getProductoUno());
 		this.ventaSv.editarVenta(ventaEditada);
-		//then
-		
+		// then
+
 		verify(this.ventaRepo).existsById(anyLong());
 		verify(this.clienteSv).traerEntidadCliente(anyLong());
 		verify(this.productoSv, times(ventaEditada.getListaProductos().size())).traerEntidadProducto(anyLong());
-		
+
 	}
-	
+
 	@Test
-	public void editarVentaTestErrorNoExiste(){
-		//given
-		DTOventa ventaDTO = DataProvider.getVentaEditada();			//when
+	public void editarVentaTestErrorNoExiste() {
+		// given
+		DTOventa ventaDTO = DataProvider.getVentaEditada(); // when
 		when(this.ventaRepo.existsById(ventaDTO.getCodigo_venta())).thenReturn(false);
-		//then
-		assertThrows(VentaException.class, ()->{
+		// then
+		assertThrows(VentaException.class, () -> {
 			this.ventaSv.editarVenta(ventaDTO);
 		});
 		verify(this.ventaRepo).existsById(ventaDTO.getCodigo_venta());
-		
+
 	}
+
+	@Test
+	public void listaDeProductosTest() {
+		// given
+		Long idVenta = 1L;
+		// when
+		when(this.ventaRepo.existsById(anyLong())).thenReturn(true);
+		when(this.ventaRepo.findById(anyLong())).thenReturn(Optional.of(DataProvider.getVentaUno()));
+		List<DTOproducto> productos = this.ventaSv.listaDeProductos(idVenta);
+		// then
+		assertNotNull(productos);
+		verify(this.ventaRepo).existsById(anyLong());
+		verify(this.ventaRepo).findById(anyLong());
+
+	}
+
+	@Test
+	public void listaDeProductosTestErrorVentaNoExiste() {
+		// given
+		Long idVenta = 1L;
+		// when
+		when(this.ventaRepo.existsById(anyLong())).thenReturn(false);
+		assertThrows(VentaException.class, () -> {
+			this.ventaSv.listaDeProductos(idVenta);
+		});
+		// then
+		verify(this.ventaRepo).existsById(anyLong());
+	}
+
+	@Test
+	public void traerClienteMayorCompraTest() {
+		// when
+		when(this.ventaRepo.traerMayorVenta()).thenReturn(DataProvider.getVentaUno());
+		DTOclienteMayorCompra dto = this.ventaSv.traerClienteMayorCompra();
+		// then
+		assertNotNull(dto);
+		assertInstanceOf(DTOclienteMayorCompra.class, dto);
+		verify(this.ventaRepo).traerMayorVenta();
+	}
+
+	@Test
+	public void traerClienteMayorCompraTestNoHayVenta() {
+		// when
+		when(this.ventaRepo.traerMayorVenta()).thenReturn(null);
+		// then
+		assertThrows(VentaException.class, () -> {
+			DTOclienteMayorCompra dto = this.ventaSv.traerClienteMayorCompra();
+		});
+		verify(this.ventaRepo).traerMayorVenta();
+	}
+
+	@Test
+	public void traerVentaSegunFechaTest(){
+		//given
+		LocalDate fecha = LocalDate.now();
+		//when
+		when(this.ventaRepo.ventasDeUnDia(fecha))
+				.thenReturn(DataProvider.getVentaYmontoDTO());
+	    DTOventaYmontoDia dto = this.ventaSv.traerVentasSegunFecha(fecha);
+		//then
+		assertNotNull(dto);
+		assertInstanceOf(DTOventaYmontoDia.class,dto);
+		verify(this.ventaRepo).ventasDeUnDia(fecha);
+	}
+	
+	@Test
+	public void traerVentaSegunFechaTestError(){
+		//given
+		LocalDate fecha = LocalDate.now();
+		//when
+		when(this.ventaRepo.ventasDeUnDia(fecha))
+				.thenReturn(null);
+	    assertThrows(VentaException.class,()->{
+			this.ventaSv.traerVentasSegunFecha(fecha);
+		});
+		//then
+		verify(this.ventaRepo).ventasDeUnDia(fecha);
+	}
+	
 }
