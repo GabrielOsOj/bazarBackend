@@ -127,6 +127,22 @@
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>0.8.13</version>
+                <configuration>
+                    <excludes>
+                        <exclude>
+                            com/gbInc/**/DTO*
+                        </exclude>
+                          <exclude>
+                            com/gbInc/**/bazar/*
+                        </exclude>
+                          <exclude>
+                            com/gbInc/**/mappers/**
+                        </exclude>
+                        <exclude>
+                            com/gbInc/**/exception/**
+                        </exclude>
+                    </excludes>
+                </configuration>
                 <executions>
                     <execution>
                         <goals>
