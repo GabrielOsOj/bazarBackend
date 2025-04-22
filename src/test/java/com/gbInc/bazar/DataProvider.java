@@ -90,6 +90,51 @@ public class DataProvider {
 		return new DTOproducto(null, "Fuente para horno", "Cerámica y Fuego", 4500D, 8D);
 	}
 
+	public static Producto getProductoConOtroStock() {
+
+		return Producto.builder()
+			.codigo_producto(1L)
+			.nombre("plato")
+			.marca("ceramicas dal")
+			.cantidad_disponible(5D)
+			.costo(200D)
+			.build();
+	};
+
+	public static DTOproducto getProductoConOtroStockDTO() {
+
+		return DTOproducto.builder()
+			.codigo_producto(1L)
+			.nombre("plato")
+			.marca("ceramicas dal")
+			.cantidad_disponible(5D)
+			.cantidad_comprada(1D)
+			.costo(200D)
+			.build();
+	};
+
+	public static Producto getProductoConOtroStockError() {
+
+		return Producto.builder()
+			.codigo_producto(1L)
+			.nombre("plato")
+			.marca("ceramicas dal")
+			.cantidad_disponible(1D)
+			.costo(200D)
+			.build();
+	};
+
+	public static DTOproducto getProductoConOtroStockErrorDTO() {
+
+		return DTOproducto.builder()
+			.codigo_producto(1L)
+			.nombre("plato")
+			.marca("ceramicas dal")
+			.cantidad_comprada(10D)
+			.cantidad_disponible(1D)
+			.costo(200D)
+			.build();
+	};
 	// ----------------- Ventas -----------------
 
 	public static DTOventa getNuevaVenta() {

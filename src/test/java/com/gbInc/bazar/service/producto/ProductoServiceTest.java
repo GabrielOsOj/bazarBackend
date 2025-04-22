@@ -183,4 +183,60 @@ public class ProductoServiceTest {
 		verify(this.productoRepo).existsById(any());
 	}
 
+	@Test
+	public void faltaStockTest(){
+		//given
+		//when
+		when(this.productoRepo.faltaStock())
+				.thenReturn(DataProvider.getListaProductos());
+		List<DTOproducto> productos = this.productoSv.faltaStock();
+		//then
+		assertNotNull(productos);
+		verify(this.productoRepo).faltaStock();
+	}
+	
+		@Test
+	public void faltaStockTestListaVacia(){
+		//given
+		//when
+		when(this.productoRepo.faltaStock())
+				.thenReturn(DataProvider.getListaProductosVacia());
+		List<DTOproducto> productos = this.productoSv.faltaStock();
+		//then
+		assertEquals(List.of(),productos);
+		verify(this.productoRepo).faltaStock();
+	}
+	
+	@Test
+	public void actualizarStockTest(){
+		//given
+		List<DTOproducto> productos = List.of(DataProvider.getProductoConOtroStockDTO());
+		//when
+		when(this.productoRepo.existsById(anyLong()))
+				.thenReturn(true);
+		when(this.productoRepo.findById(anyLong()))
+				.thenReturn(Optional.of(DataProvider.getProductoConOtroStock()));
+		this.productoSv.actualizarStock(productos);
+		//then
+		ArgumentCaptor capturador = ArgumentCaptor.forClass(Producto.class);
+		verify(this.productoRepo).saveAll(any());
+	}
+	
+	@Test
+	public void actualizarStockTestErrorStockNoSuficiente(){
+		//given
+		List<DTOproducto> productos = List.of(DataProvider.getProductoConOtroStockErrorDTO());
+		//when
+		when(this.productoRepo.existsById(anyLong()))
+				.thenReturn(true);
+		when(this.productoRepo.findById(anyLong()))
+				.thenReturn(Optional.of(DataProvider.getProductoConOtroStockError()));
+		
+		assertThrows(ProductoException.class, ()->{
+			this.productoSv.actualizarStock(productos);
+		});
+		
+		//then
+
+	}
 }
