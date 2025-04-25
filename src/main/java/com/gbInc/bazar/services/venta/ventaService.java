@@ -42,6 +42,18 @@ public class VentaService implements IventaService {
 	@Override
 	public void crearVenta(DTOventa venta) {
 
+		if (venta.getCliente() == null) {
+			throw new VentaException(HttpStatus.BAD_REQUEST, CodigosExcepcion.BE304);
+		}
+		
+		if (venta.getListaProductos()== null) {
+			throw new VentaException(HttpStatus.BAD_REQUEST, CodigosExcepcion.BE305);
+		}
+		
+		if (venta.getListaProductos().size() == 0) {
+			throw new VentaException(HttpStatus.BAD_REQUEST, CodigosExcepcion.BE306);
+		}
+		
 		Cliente cli = this.clienteSv.traerEntidadCliente(venta.getCliente().getId_cliente());
 
 		this.productoSv.actualizarStock(venta.getListaProductos());
@@ -51,7 +63,6 @@ public class VentaService implements IventaService {
 			.map(p -> this.productoSv.traerEntidadProducto(p.getCodigo_producto()))
 			.collect(Collectors.toList());
 
-		
 		Venta nuevaVenta = Venta.builder()
 			.codigo_venta(venta.getCodigo_venta())
 			.fecha_venta(venta.getFecha_venta())
@@ -62,7 +73,7 @@ public class VentaService implements IventaService {
 
 		this.ventaRepo.save(nuevaVenta);
 	}
-	
+
 	@Override
 	public List<DTOventa> traerVentas() {
 
@@ -98,10 +109,9 @@ public class VentaService implements IventaService {
 
 	@Override
 	public List<DTOproducto> listaDeProductos(Long idVenta) {
-		return this.traerVenta(idVenta)
-			.getListaProductos();
+		return this.traerVenta(idVenta).getListaProductos();
 	}
-	
+
 	private void ventaExiste(Long idVenta) {
 		if (!this.ventaRepo.existsById(idVenta)) {
 			throw new VentaException(HttpStatus.NOT_FOUND, CodigosExcepcion.BE302);
@@ -110,31 +120,30 @@ public class VentaService implements IventaService {
 
 	@Override
 	public DTOclienteMayorCompra traerClienteMayorCompra() {
-				
+
 		Venta ventaMax = this.ventaRepo.traerMayorVenta();
 
-		if(ventaMax==null){
+		if (ventaMax == null) {
 			throw new VentaException(HttpStatus.NOT_FOUND, CodigosExcepcion.BE303);
 		}
 		return DTOclienteMayorCompra.builder()
-				.codigo_venta(ventaMax.getCodigo_venta())
-				.total(ventaMax.getTotal())
-				.cantidadProductos(ventaMax.getListaProductos().size())
-				.nombreCliente(ventaMax.getCliente().getNombre())
-				.apellidoCliente(ventaMax.getCliente().getApellido())
-				.build();
+			.codigo_venta(ventaMax.getCodigo_venta())
+			.total(ventaMax.getTotal())
+			.cantidadProductos(ventaMax.getListaProductos().size())
+			.nombreCliente(ventaMax.getCliente().getNombre())
+			.apellidoCliente(ventaMax.getCliente().getApellido())
+			.build();
 	}
 
 	@Override
 	public DTOventaYmontoDia traerVentasSegunFecha(LocalDate fecha) {
 		DTOventaYmontoDia ventaYmonto = this.ventaRepo.ventasDeUnDia(fecha);
-		
-		if(ventaYmonto == null){
-			throw new VentaException(HttpStatus.NOT_FOUND,
-			CodigosExcepcion.BE303);
+
+		if (ventaYmonto == null || ventaYmonto.getMontoDelDia() == null) {
+			throw new VentaException(HttpStatus.NOT_FOUND, CodigosExcepcion.BE307);
 		}
-		
+
 		return ventaYmonto;
 	}
-	
+
 }

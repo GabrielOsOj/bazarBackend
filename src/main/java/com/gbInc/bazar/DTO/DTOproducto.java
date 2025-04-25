@@ -9,6 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
+@NoArgsConstructor
 public class DTOproducto {
 	
 	private Long codigo_producto;

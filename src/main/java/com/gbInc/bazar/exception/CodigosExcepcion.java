@@ -19,5 +19,11 @@ public class CodigosExcepcion {
 	public static final String BE301 = "Error con el producto";
 	public static final String BE302 = "No existe una venta asociada a ese id";
 	public static final String BE303 = "No hay ventas registradas en la base de datos";
+	public static final String BE304 = "El cliente no puede ser null";
+	public static final String BE305 = "La lista de productos no puede ser null";
+	public static final String BE306 = "La lista de productos no puede estar vacia";
+	public static final String BE307 = "No hay ventas registradas en esa fecha";
+	
+	
 			
 }

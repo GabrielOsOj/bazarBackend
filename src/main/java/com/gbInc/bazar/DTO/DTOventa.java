@@ -1,5 +1,6 @@
 package com.gbInc.bazar.DTO;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.gbInc.bazar.persistence.models.Cliente;
 import com.gbInc.bazar.persistence.models.Producto;
 import java.time.LocalDate;
@@ -19,6 +20,7 @@ import lombok.Setter;
 public class DTOventa {
 	
 	private Long codigo_venta;
+	@JsonFormat(pattern="yyyy-MM-dd")
 	private LocalDate fecha_venta;
 	private Double total;
 	

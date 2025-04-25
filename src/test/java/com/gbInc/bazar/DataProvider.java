@@ -31,7 +31,7 @@ public class DataProvider {
 	}
 
 	public static DTOcliente getClienteUnoDTO() {
-		return new DTOcliente(1L, "gustavo", "gonzales", "23111025");
+		return new DTOcliente(2L, "gustavo", "gonzales", "23111025");
 	}
 
 	public static DTOcliente getNuevoClienteDTO() {
@@ -79,6 +79,10 @@ public class DataProvider {
 		return getListaProductos().get(0);
 	}
 
+	public static DTOproducto getProductoUnoDTO() {
+		return getListaProductosDTO().get(1);
+	}
+
 	public static DTOproducto getProductoEditado() {
 		return new DTOproducto(5L, "Jarra medidora 1L", "Colombrado", 1200D, 25D);
 	}
@@ -94,7 +98,7 @@ public class DataProvider {
 	public static Producto getProductoConOtroStock() {
 
 		return Producto.builder()
-			.codigo_producto(1L)
+			.codigo_producto(2L)
 			.nombre("plato")
 			.marca("ceramicas dal")
 			.cantidad_disponible(5D)
@@ -136,6 +140,18 @@ public class DataProvider {
 			.costo(200D)
 			.build();
 	};
+
+	public static DTOproducto getProductoConOtroStockItest() {
+
+		return DTOproducto.builder()
+			.codigo_producto(2L)
+			.nombre("plato")
+			.marca("ceramicas dal")
+			.cantidad_comprada(10D)
+			.cantidad_disponible(1D)
+			.costo(200D)
+			.build();
+	};
 	// ----------------- Ventas -----------------
 
 	public static DTOventa getNuevaVenta() {
@@ -143,18 +159,38 @@ public class DataProvider {
 			.codigo_venta(null)
 			.fecha_venta(LocalDate.of(2025, 04, 15))
 			.total(40000D)
-			.listaProductos(getListaProductosDTO())
+			.listaProductos(List.of(getProductoConOtroStockItest()))
 			.cliente(getClienteUnoDTO())
 			.build();
 	}
 
-	public static DTOventa getNuevaVentaErrorCliente() {
+	public static DTOventa getNuevaVentaErrorClienteNull() {
 		return DTOventa.builder()
 			.codigo_venta(null)
 			.fecha_venta(LocalDate.of(2025, 04, 15))
 			.total(40000D)
 			.listaProductos(getListaProductosDTO())
 			.cliente(null)
+			.build();
+	}
+
+	public static DTOventa getNuevaVentaErrorProductosNull() {
+		return DTOventa.builder()
+			.codigo_venta(null)
+			.fecha_venta(LocalDate.of(2025, 04, 15))
+			.total(40000D)
+			.listaProductos(null)
+			.cliente(getClienteUnoDTO())
+			.build();
+	}
+
+	public static DTOventa getNuevaVentaErrorProductosVacios() {
+		return DTOventa.builder()
+			.codigo_venta(null)
+			.fecha_venta(LocalDate.of(2025, 04, 15))
+			.total(40000D)
+			.listaProductos(List.of())
+			.cliente(getClienteUnoDTO())
 			.build();
 	}
 
@@ -175,15 +211,11 @@ public class DataProvider {
 	public static DTOventa getVentaEditada() {
 		return new DTOventa(3L, LocalDate.now(), 4000D, getListaProductosDTO(), getClienteUnoDTO());
 	}
-	
-	public static DTOventaYmontoDia getVentaYmontoDTO(){
-	
-		return DTOventaYmontoDia.builder()
-				.fecha(LocalDate.now())
-				.cantidadVentasDia(20L)
-				.montoDelDia(20000D)
-				.build();
-	
+
+	public static DTOventaYmontoDia getVentaYmontoDTO() {
+
+		return DTOventaYmontoDia.builder().fecha(LocalDate.now()).cantidadVentasDia(20L).montoDelDia(20000D).build();
+
 	}
 
 }
