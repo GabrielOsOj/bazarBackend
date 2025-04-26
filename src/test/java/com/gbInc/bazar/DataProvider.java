@@ -63,12 +63,12 @@ public class DataProvider {
 
 	public static List<DTOproducto> getListaProductosDTO() {
 
-		return List.of(new DTOproducto(1L, "Vaso plástico 350cc", "Colombraro", 1000D, 10D),
+		return List.of(new DTOproducto(1L, "Vaso plástico 350cc", "Colombraro", 1000D, 11D),
 				new DTOproducto(2L, "Plato hondo cerámica", "Cerámicas del Sur", 2500D, 20D),
-				new DTOproducto(3L, "Taza de vidrio", "Vidrios Argentinos", 1800D, 15D),
+				new DTOproducto(3L, "Taza de vidrio", "Vidrios Argentinos", 1800D, 12D),
 				new DTOproducto(4L, "Cubiertos acero inox", "AceroPlus", 3200D, 50D),
-				new DTOproducto(5L, "Jarra medidora 1L", "Plásticos Norte", 1200D, 25D),
-				new DTOproducto(6L, "Fuente para horno", "Cerámica y Fuego", 4500D, 8D));
+				new DTOproducto(5L, "Jarra medidora 1L", "Plásticos Norte", 1200D, 2D),
+				new DTOproducto(6L, "Fuente para horno", "Cerámica y Fuego", 4500D, 1D));
 	}
 
 	public static List<Producto> getListaProductosVacia() {

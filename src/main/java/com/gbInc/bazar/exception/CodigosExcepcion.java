@@ -13,7 +13,9 @@ public class CodigosExcepcion {
 	/*Productos*/
 	public static final String BE200 = "El producto no existe en la base de datos";
 	public static final String BE201 = "No hay suficiente stock del producto para completar la venta";
-	
+	public static final String BE203 = "El nombre del producto no es valido";
+	public static final String BE204 = "La marca del producto no es valida";
+
 	/* Ventas */
 	public static final String BE300 = "Error con el cliente";
 	public static final String BE301 = "Error con el producto";

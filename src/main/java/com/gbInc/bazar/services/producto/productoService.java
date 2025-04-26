@@ -49,6 +49,7 @@ public class ProductoService implements IproductoService {
 	public void editarProducto(DTOproducto productoDTO) {
 
 		this.productoExiste(productoDTO.getCodigo_producto());
+		this.validarCampos(productoDTO);
 		this.productoRepo.save(ProductoMapper.aProducto(productoDTO));
 
 	}
@@ -57,6 +58,7 @@ public class ProductoService implements IproductoService {
 	public void crearProducto(DTOproducto productoDTO) {
 
 		productoDTO.setCodigo_producto(null);
+		this.validarCampos(productoDTO);
 		this.productoRepo.save(ProductoMapper.aProducto(productoDTO));
 
 	}
@@ -89,6 +91,17 @@ public class ProductoService implements IproductoService {
 	@Override
 	public List<DTOproducto> faltaStock() {
 		return this.productoRepo.faltaStock().stream().map(p -> ProductoMapper.aDTO(p)).collect(Collectors.toList());
+	}
+
+	private void validarCampos(DTOproducto producto) {
+
+		if (producto.getNombre() == null || producto.getNombre().isBlank()) {
+			throw new ProductoException(HttpStatus.BAD_REQUEST, CodigosExcepcion.BE203);
+		}
+
+		if (producto.getMarca() == null||producto.getMarca().isBlank()) {
+			throw new ProductoException(HttpStatus.BAD_REQUEST, CodigosExcepcion.BE204);
+		}
 	}
 
 	private void validarStock(Double cantidadDisponible, Double cantidadComprada, String nombre) {
