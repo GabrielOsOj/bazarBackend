@@ -136,7 +136,7 @@ public class productoControllerTest {
 		// given
 		String url = "/productos/crear";
 		DTOproducto nuevoProducto = DataProvider.getNuevoProducto();
-		nuevoProducto.setNombre("");
+		nuevoProducto.setNombre(null);
 		// then
 		this.mvc
 			.perform(MockMvcRequestBuilders.post(url)
@@ -153,6 +153,39 @@ public class productoControllerTest {
 		String url = "/productos/crear";
 		DTOproducto nuevoProducto = DataProvider.getNuevoProducto();
 		nuevoProducto.setMarca(null);
+		// then
+		this.mvc
+			.perform(MockMvcRequestBuilders.post(url)
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON)
+				.content(this.mapper.writeValueAsString(nuevoProducto)))
+			.andExpect(status().isBadRequest());
+
+	}
+	
+		@Test
+	public void crearProductoTestErrorNombreVacio() throws Exception {
+
+		// given
+		String url = "/productos/crear";
+		DTOproducto nuevoProducto = DataProvider.getNuevoProducto();
+		nuevoProducto.setNombre("");
+		// then
+		this.mvc
+			.perform(MockMvcRequestBuilders.post(url)
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON)
+				.content(this.mapper.writeValueAsString(nuevoProducto)))
+			.andExpect(status().isBadRequest());
+
+	}
+
+	@Test
+	public void crearProductoTestErrorMarcaVacio() throws Exception {
+		// given
+		String url = "/productos/crear";
+		DTOproducto nuevoProducto = DataProvider.getNuevoProducto();
+		nuevoProducto.setMarca("");
 		// then
 		this.mvc
 			.perform(MockMvcRequestBuilders.post(url)

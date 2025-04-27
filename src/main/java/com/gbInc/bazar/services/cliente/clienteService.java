@@ -78,16 +78,17 @@ public class ClienteService implements IclienteService {
 
 	private void validarCliente(DTOcliente cliente) {
 
-		if (cliente.getNombre().isBlank()) {
+		if (cliente.getNombre() == null||cliente.getNombre().isBlank()) {
 			throw new ClienteException(HttpStatus.BAD_REQUEST, CodigosExcepcion.BE101);
 		}
 
-		if (cliente.getApellido().isBlank()) {
+		if ( cliente.getApellido() == null||cliente.getApellido().isBlank()) {
 			throw new ClienteException(HttpStatus.BAD_REQUEST, CodigosExcepcion.BE102);
 		}
-		if (cliente.getDni().isBlank()) {
+		if (cliente.getDni() == null || cliente.getDni().isBlank()) {
 			throw new ClienteException(HttpStatus.BAD_REQUEST, CodigosExcepcion.BE103);
 		}
-		
+
 	}
+
 }

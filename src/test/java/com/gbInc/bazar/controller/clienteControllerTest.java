@@ -54,7 +54,9 @@ public class clienteControllerTest {
 		DTOcliente clienteDB = this.clienteSv.traerClientes().get(0);
 		String url = "/clientes/" + clienteDB.getId_cliente();
 		// when
-		MvcResult respuesta = this.mock.perform(MockMvcRequestBuilders.get(url)).andExpect(status().isAccepted()).andReturn();
+		MvcResult respuesta = this.mock.perform(MockMvcRequestBuilders.get(url))
+			.andExpect(status().isAccepted())
+			.andReturn();
 
 		// then
 		String clienteString = respuesta.getResponse().getContentAsString();
@@ -109,7 +111,8 @@ public class clienteControllerTest {
 
 		// then
 		String clienteString = respuesta.getResponse().getContentAsString();
-		List<DTOcliente> clienteResp = mapper.readValue(clienteString, new TypeReference<List<DTOcliente>>(){});
+		List<DTOcliente> clienteResp = mapper.readValue(clienteString, new TypeReference<List<DTOcliente>>() {
+		});
 
 		assertEquals(List.of(), clienteResp);
 	}
@@ -277,6 +280,75 @@ public class clienteControllerTest {
 	}
 
 	@Test
+	public void editarClienteTestErrorNombreNull() throws Exception {
+		// given
+		DTOcliente clienteEditado = this.clienteSv.traerClientes().get(0);
+		String nuevoNombre = null;
+		clienteEditado.setNombre(nuevoNombre);
+
+		String url = "/clientes/editar/" + clienteEditado.getId_cliente();
+		// when
+		MvcResult respuesta = this.mock.perform(MockMvcRequestBuilders.put(url)
+			.content(mapper.writeValueAsString(clienteEditado))
+			.contentType(MediaType.APPLICATION_JSON)
+			.accept(MediaType.APPLICATION_JSON)
+
+		).andExpect(status().isBadRequest()).andReturn();
+
+		// then
+
+		String mensaje = respuesta.getResponse().getContentAsString();
+		assertEquals(CodigosExcepcion.BE101, mensaje);
+
+	}
+
+	@Test
+	public void editarClienteTestErrorApellidoNull() throws Exception {
+		// given
+		DTOcliente clienteEditado = this.clienteSv.traerClientes().get(0);
+		String nuevoApellido = null;
+		clienteEditado.setApellido(nuevoApellido);
+
+		String url = "/clientes/editar/" + clienteEditado.getId_cliente();
+		// when
+		MvcResult respuesta = this.mock.perform(MockMvcRequestBuilders.put(url)
+			.content(mapper.writeValueAsString(clienteEditado))
+			.contentType(MediaType.APPLICATION_JSON)
+			.accept(MediaType.APPLICATION_JSON)
+
+		).andExpect(status().isBadRequest()).andReturn();
+
+		// then
+
+		String mensaje = respuesta.getResponse().getContentAsString();
+		assertEquals(CodigosExcepcion.BE102, mensaje);
+
+	}
+
+	@Test
+	public void editarClienteTestErrorDniNull() throws Exception {
+		// given
+		DTOcliente clienteEditado = this.clienteSv.traerClientes().get(0);
+		String nuevoDni = null;
+		clienteEditado.setDni(nuevoDni);
+
+		String url = "/clientes/editar/" + clienteEditado.getId_cliente();
+		// when
+		MvcResult respuesta = this.mock.perform(MockMvcRequestBuilders.put(url)
+			.content(mapper.writeValueAsString(clienteEditado))
+			.contentType(MediaType.APPLICATION_JSON)
+			.accept(MediaType.APPLICATION_JSON)
+
+		).andExpect(status().isBadRequest()).andReturn();
+
+		// then
+
+		String mensaje = respuesta.getResponse().getContentAsString();
+		assertEquals(CodigosExcepcion.BE103, mensaje);
+
+	}
+
+	@Test
 	public void eliminarClienteTest() throws Exception {
 		// given
 		DTOcliente clienteDB = this.clienteSv.traerClientes().get(0);
@@ -304,4 +376,5 @@ public class clienteControllerTest {
 		String mensaje = respuesta.getResponse().getContentAsString();
 		assertEquals(CodigosExcepcion.BE100, mensaje);
 	}
+
 }
