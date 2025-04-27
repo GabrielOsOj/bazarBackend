@@ -22,6 +22,14 @@ public class DataProvider {
 				new Cliente(4L, "mariela", "melgarejo", "4255618"), new Cliente(5L, "facundo", "senini", "8785541"));
 	}
 
+	public static List<DTOcliente> getListaClientesDTO() {
+		return List.of(new DTOcliente(1L, "gustavo", "gonzales", "23111025"),
+				new DTOcliente(2L, "franco", "peralta", "4658891"),
+				new DTOcliente(3L, "mirna", "gustamante", "78999875"),
+				new DTOcliente(4L, "mariela", "melgarejo", "4255618"),
+				new DTOcliente(5L, "facundo", "senini", "8785541"));
+	}
+
 	public static List<Cliente> getListaClientesVacia() {
 		return List.of();
 	}

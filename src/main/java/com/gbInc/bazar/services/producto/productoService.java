@@ -99,7 +99,7 @@ public class ProductoService implements IproductoService {
 			throw new ProductoException(HttpStatus.BAD_REQUEST, CodigosExcepcion.BE203);
 		}
 
-		if (producto.getMarca() == null||producto.getMarca().isBlank()) {
+		if (producto.getMarca() == null || producto.getMarca().isBlank()) {
 			throw new ProductoException(HttpStatus.BAD_REQUEST, CodigosExcepcion.BE204);
 		}
 	}

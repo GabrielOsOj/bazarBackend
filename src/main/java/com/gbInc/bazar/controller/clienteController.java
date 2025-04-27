@@ -33,13 +33,8 @@ public class clienteController {
 	public ResponseEntity<DTOcliente> traerCliente(@PathVariable("id_cliente") Long id) {
 
 		DTOcliente cli = this.clienteSv.traerCliente(id);
+		return new ResponseEntity<>(cli, HttpStatus.ACCEPTED);
 
-		if (cli != null) {
-			return new ResponseEntity<>(cli, HttpStatus.ACCEPTED);
-		}
-		else {
-			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-		}
 	}
 
 	@PostMapping("/crear")
@@ -65,7 +60,7 @@ public class clienteController {
 
 		this.clienteSv.eliminarCliente(id_cliente);
 
-		return new ResponseEntity<>(true, HttpStatus.CREATED);
+		return new ResponseEntity<>(true, HttpStatus.NO_CONTENT);
 	}
 
 }

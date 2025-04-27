@@ -9,6 +9,9 @@ public class CodigosExcepcion {
 	
 	/*Clientes*/
 	public static final String BE100 = "El cliente no existe en la base de datos";
+	public static final String BE101 = "El nombre del cliente no es valido";
+	public static final String BE102 = "El apellido del cliente no es valido";
+	public static final String BE103 = "El dni del cliente no es valido";
 	
 	/*Productos*/
 	public static final String BE200 = "El producto no existe en la base de datos";

@@ -38,9 +38,10 @@ public class ClienteService implements IclienteService {
 	@Override
 	public void crearCliente(DTOcliente cliente) {
 
+		this.validarCliente(cliente);
 		cliente.setId_cliente(null);
 		this.clienteRepo.save(ClienteMapper.aCliente(cliente));
-		
+
 	}
 
 	@Override
@@ -55,6 +56,7 @@ public class ClienteService implements IclienteService {
 	public void editarCliente(DTOcliente cliente) {
 
 		this.clienteExiste(cliente.getId_cliente());
+		this.validarCliente(cliente);
 		this.clienteRepo.save(ClienteMapper.aCliente(cliente));
 
 	}
@@ -74,4 +76,18 @@ public class ClienteService implements IclienteService {
 		}
 	}
 
+	private void validarCliente(DTOcliente cliente) {
+
+		if (cliente.getNombre().isBlank()) {
+			throw new ClienteException(HttpStatus.BAD_REQUEST, CodigosExcepcion.BE101);
+		}
+
+		if (cliente.getApellido().isBlank()) {
+			throw new ClienteException(HttpStatus.BAD_REQUEST, CodigosExcepcion.BE102);
+		}
+		if (cliente.getDni().isBlank()) {
+			throw new ClienteException(HttpStatus.BAD_REQUEST, CodigosExcepcion.BE103);
+		}
+		
+	}
 }
