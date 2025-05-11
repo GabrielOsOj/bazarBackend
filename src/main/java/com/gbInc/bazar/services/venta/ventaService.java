@@ -16,6 +16,10 @@ import com.gbInc.bazar.services.cliente.IclienteService;
 import com.gbInc.bazar.services.producto.IproductoService;
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -42,32 +46,25 @@ public class VentaService implements IventaService {
 	@Override
 	public void crearVenta(DTOventa venta) {
 
-		if (venta.getCliente() == null) {
-			throw new VentaException(HttpStatus.BAD_REQUEST, CodigosExcepcion.BE304);
-		}
-		
-		if (venta.getListaProductos()== null) {
-			throw new VentaException(HttpStatus.BAD_REQUEST, CodigosExcepcion.BE305);
-		}
-		
-		if (venta.getListaProductos().size() == 0) {
-			throw new VentaException(HttpStatus.BAD_REQUEST, CodigosExcepcion.BE306);
-		}
-		
+		this.validacionesVenta(venta);
+
 		Cliente cli = this.clienteSv.traerEntidadCliente(venta.getCliente().getId_cliente());
 
 		this.productoSv.actualizarStock(venta.getListaProductos());
 
-		List<Producto> productos = venta.getListaProductos()
-			.stream()
-			.map(p -> this.productoSv.traerEntidadProducto(p.getCodigo_producto()))
-			.collect(Collectors.toList());
+		List<Producto> productosPlanos = new ArrayList<>();
+		for (DTOproducto p : venta.getListaProductos()) {
+			Producto productoBDD = this.productoSv.traerEntidadProducto(p.getCodigo_producto());
+			for (int i = 0; i < p.getCantidad_comprada(); i++) {
+				productosPlanos.add(productoBDD);
+			}
+		}
 
 		Venta nuevaVenta = Venta.builder()
 			.codigo_venta(venta.getCodigo_venta())
 			.fecha_venta(venta.getFecha_venta())
 			.cliente(cli)
-			.listaProductos(productos)
+			.listaProductos(productosPlanos)
 			.total(venta.getTotal())
 			.build();
 
@@ -103,19 +100,131 @@ public class VentaService implements IventaService {
 	public void editarVenta(DTOventa ventaEditada) {
 
 		this.ventaExiste(ventaEditada.getCodigo_venta());
-		this.crearVenta(ventaEditada);
+		this.validacionesVenta(ventaEditada);
+
+		System.out.println(ventaEditada.getListaProductos().get(0).getCantidad_comprada());
+
+		Cliente cli = this.clienteSv.traerEntidadCliente(ventaEditada.getCliente().getId_cliente());
+
+		List<DTOproducto> productosDeLaVentaGuardados = this
+			.compactadorProductos(this.listaDeProductos(ventaEditada.getCodigo_venta()));
+
+		List<Long> idProductoGuardado = productosDeLaVentaGuardados.stream()
+			.map(pg -> pg.getCodigo_producto())
+			.collect(Collectors.toList());
+
+		List<DTOproducto> productosNuevos = new ArrayList<>();
+		List<DTOproducto> productosAgregados = new ArrayList<>();
+
+		List<DTOproducto> copiaProductos = ventaEditada.getListaProductos().stream().map((p) -> {
+			System.out.println(p.getCantidad_comprada());
+			return DTOproducto.builder()
+				.codigo_producto(p.getCodigo_producto())
+				.nombre(p.getNombre())
+				.marca(p.getMarca())
+				.costo(p.getCosto())
+				.cantidad_disponible(p.getCantidad_disponible())
+				.cantidad_comprada(p.getCantidad_comprada())
+				.build();
+		}).collect(Collectors.toList());
+
+		copiaProductos.forEach((p) -> {
+			int index = idProductoGuardado.indexOf(p.getCodigo_producto());
+			// si es -1, el producto no existia en la venta
+			if (index == -1) {
+				productosNuevos.add(p);
+				return;
+			}
+			// si existia, compruebo si se agregaron productos
+			if (p.getCantidad_comprada() > productosDeLaVentaGuardados.get(index).getCantidad_comprada()) {
+				p.setCantidad_comprada(
+						p.getCantidad_comprada() - productosDeLaVentaGuardados.get(index).getCantidad_comprada());
+				productosAgregados.add(p);
+				return;
+			}
+			// si existia compruebo si se le sacaron productos
+			if (p.getCantidad_comprada() < productosDeLaVentaGuardados.get(index).getCantidad_comprada()) {
+				p.setCantidad_comprada(
+						productosDeLaVentaGuardados.get(index).getCantidad_comprada() - p.getCantidad_comprada());
+				
+				return;
+			}
+			// si existia y se mantiene igual, lo descarto
+		});
+
+		productosAgregados.addAll(productosNuevos);
+
+		this.productoSv.actualizarStock(productosAgregados);
+
+		List<Producto> productosPlanos = new ArrayList<>();
+		for (DTOproducto p : ventaEditada.getListaProductos()) {
+			Producto productoBDD = this.productoSv.traerEntidadProducto(p.getCodigo_producto());
+			for (int i = 0; i < p.getCantidad_comprada(); i++) {
+				productosPlanos.add(productoBDD);
+			}
+		}
+		System.out.println(ventaEditada.getTotal());
+		Venta nuevaVenta = Venta.builder()
+			.codigo_venta(ventaEditada.getCodigo_venta())
+			.fecha_venta(ventaEditada.getFecha_venta())
+			.cliente(cli)
+			.listaProductos(productosPlanos)
+			.total(ventaEditada.getTotal())
+			.build();
+
+		this.ventaRepo.save(nuevaVenta);
+
+//		System.out.println("Productos guardados --");
+//		productosDeLaVentaGuardados.forEach((p) -> {
+//			System.out.println(p.getNombre());
+//			System.out.println(p.getCantidad_comprada());
+//
+//		});
+//
+//		System.out.println("Productos entrantes --");
+//		ventaEditada.getListaProductos().forEach((p) -> {
+//			System.out.println(p.getNombre());
+//			System.out.println(p.getCantidad_comprada());
+//
+//		});
+//
+//		System.out.println("Productos nuevos --");
+//		productosNuevos.forEach((p) -> {
+//			System.out.println(p.getNombre());
+//			System.out.println(p.getCantidad_comprada());
+//		});
+//
+//		System.out.println("Productos agregados --");
+//		productosAgregados.forEach((p) -> {
+//			System.out.println(p.getNombre());
+//			System.out.println(p.getCantidad_comprada());
+//		});
+
+//		System.out.println("Productos descontados --");
+//		productosDescontados.forEach((p) -> {
+//			System.out.println(p.getNombre());
+//			System.out.println(p.getCantidad_comprada());
+//		});
+//
+//		System.out.println("Productos para agregar --");
+//		productosAgregados.forEach((p) -> {
+//			System.out.println(p.getNombre());
+//			System.out.println(p.getCantidad_comprada());
+//		});
+//
+//		System.out.println("Productos planos --");
+//		productosPlanos.forEach((p) -> {
+//			System.out.println(p.getCodigo_producto());
+//			System.out.println(p.getNombre());
+//		});
+//
+//		System.out.println("-------------------------");
 
 	}
 
 	@Override
 	public List<DTOproducto> listaDeProductos(Long idVenta) {
 		return this.traerVenta(idVenta).getListaProductos();
-	}
-
-	private void ventaExiste(Long idVenta) {
-		if (!this.ventaRepo.existsById(idVenta)) {
-			throw new VentaException(HttpStatus.NOT_FOUND, CodigosExcepcion.BE302);
-		}
 	}
 
 	@Override
@@ -144,6 +253,51 @@ public class VentaService implements IventaService {
 		}
 
 		return ventaYmonto;
+	}
+
+	/* Utilidades */
+
+	private void validacionesVenta(DTOventa venta) {
+		if (venta.getCliente() == null) {
+			throw new VentaException(HttpStatus.BAD_REQUEST, CodigosExcepcion.BE304);
+		}
+
+		if (venta.getListaProductos() == null) {
+			throw new VentaException(HttpStatus.BAD_REQUEST, CodigosExcepcion.BE305);
+		}
+
+		if (venta.getListaProductos().size() == 0) {
+			throw new VentaException(HttpStatus.BAD_REQUEST, CodigosExcepcion.BE306);
+		}
+	}
+
+	private void ventaExiste(Long idVenta) {
+		if (!this.ventaRepo.existsById(idVenta)) {
+			throw new VentaException(HttpStatus.NOT_FOUND, CodigosExcepcion.BE302);
+		}
+	}
+
+	private List<DTOproducto> compactadorProductos(List<DTOproducto> productos) {
+
+		List<DTOproducto> productosCompactos = new ArrayList<>();
+		List<Long> productosCompactosId = new ArrayList<>();
+
+		for (DTOproducto p : productos) {
+
+			if (productosCompactosId.contains(p.getCodigo_producto())) {
+				int index = productosCompactosId.indexOf(p.getCodigo_producto());
+				productosCompactos.get(index)
+					.setCantidad_comprada(productosCompactos.get(index).getCantidad_comprada() + 1);
+			}
+			else {
+				p.setCantidad_comprada(1D);
+				productosCompactos.add(p);
+				productosCompactosId.add(p.getCodigo_producto());
+			}
+
+		}
+
+		return productosCompactos;
 	}
 
 }

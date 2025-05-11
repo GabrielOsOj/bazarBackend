@@ -1,5 +1,6 @@
 package com.gbInc.bazar.DTO;
 
+import java.util.Objects;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -35,4 +36,35 @@ public class DTOproducto {
 		this.costo = costo;
 		this.cantidad_disponible = cantidad_disponible;
 	}
+	
+	
+	@Override
+	public boolean equals(Object obj) {
+		
+		if(this == obj){
+			System.out.println("pum1");
+			return true;
+		}
+		
+		if(obj == null){
+			System.out.println("pum2");
+			return false;
+		}
+		if(getClass() != obj.getClass()){
+			System.out.println("pum3");
+			return false;
+		}
+		
+		DTOproducto entrante = (DTOproducto) obj;
+		System.out.println("pum4");
+		return (Objects.equals(entrante.codigo_producto, this.codigo_producto) && Objects.equals(entrante.cantidad_comprada, this.cantidad_comprada));
+	
+	}
+
+	@Override
+	public int hashCode() {
+		int hash = 7;
+		hash = 83 * hash + Objects.hashCode(this.codigo_producto);
+		return hash;
+	}	
 }

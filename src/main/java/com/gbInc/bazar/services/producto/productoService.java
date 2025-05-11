@@ -114,13 +114,17 @@ public class ProductoService implements IproductoService {
 	@Override
 	public void actualizarStock(List<DTOproducto> productos) {
 
-		List<Producto> productosValidos = productos.stream().map(p -> {
+		List<Producto> productosValidos = productos
+				.stream()
+				.map(p -> {
 			DTOproducto dtoP = this.traerProducto(p.getCodigo_producto());
 			this.validarStock(dtoP.getCantidad_disponible(), p.getCantidad_comprada(), dtoP.getNombre());
+			
 			dtoP.setCantidad_comprada(p.getCantidad_comprada());
 			return dtoP;
 		}).map(p -> {
-			p.setCantidad_disponible(p.getCantidad_disponible() - p.getCantidad_comprada());
+				System.out.println("ps cant->: "+p.getCantidad_comprada());
+				p.setCantidad_disponible(p.getCantidad_disponible() - p.getCantidad_comprada());
 			return ProductoMapper.aProducto(p);
 		}).collect(Collectors.toList());
 
