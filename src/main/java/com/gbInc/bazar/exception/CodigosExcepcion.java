@@ -12,13 +12,14 @@ public class CodigosExcepcion {
 	public static final String BE101 = "El nombre del cliente no es valido";
 	public static final String BE102 = "El apellido del cliente no es valido";
 	public static final String BE103 = "El dni del cliente no es valido";
-	
+	public static final String BE104 = "El cliente esta asociado a una venta";
 	/*Productos*/
 	public static final String BE200 = "El producto no existe en la base de datos";
 	public static final String BE201 = "No hay suficiente stock del producto para completar la venta";
 	public static final String BE203 = "El nombre del producto no es valido";
 	public static final String BE204 = "La marca del producto no es valida";
-
+	public static final String BE205 = "El producto esta asociado a una venta";
+	
 	/* Ventas */
 	public static final String BE300 = "Error con el cliente";
 	public static final String BE301 = "Error con el producto";

@@ -16,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 import org.mockito.ArgumentCaptor;
+import org.springframework.dao.DataIntegrityViolationException;
 
 @ExtendWith(MockitoExtension.class)
 public class ClienteServiceTest {
@@ -114,11 +115,26 @@ public class ClienteServiceTest {
 	}
 
 	@Test
-	public void eliminarClienteTestError() {
+	public void eliminarClienteTestErrorNoExiste() {
 		// given
 		Long idCliente = 999L;
 		// when
 		when(this.clienteRepo.existsById(idCliente)).thenReturn(false);		
+		assertThrows(ClienteException.class, () -> {
+			this.clienteSv.eliminarCliente(idCliente);
+		});
+		// then
+		verify(this.clienteRepo).existsById(idCliente);
+	}
+@Test
+public void eliminarClienteTestErrorEnlazadoAVenta() {
+		// given
+		Long idCliente = 999L;
+		// when
+		when(this.clienteRepo.existsById(idCliente)).thenReturn(true);
+		doThrow(new DataIntegrityViolationException("")).
+				when(this.clienteRepo).deleteById(idCliente);
+		
 		assertThrows(ClienteException.class, () -> {
 			this.clienteSv.eliminarCliente(idCliente);
 		});

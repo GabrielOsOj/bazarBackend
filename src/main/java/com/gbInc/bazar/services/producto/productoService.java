@@ -9,6 +9,7 @@ import com.gbInc.bazar.persistence.repository.IproductoRepository;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -41,8 +42,12 @@ public class ProductoService implements IproductoService {
 	public void eliminarProducto(Long id) {
 
 		this.productoExiste(id);
+		try{
 		this.productoRepo.deleteById(id);
-
+		}catch(DataIntegrityViolationException e){
+			throw new ProductoException(HttpStatus.CONFLICT, 
+			CodigosExcepcion.BE205);
+		}
 	}
 
 	@Override
@@ -123,7 +128,6 @@ public class ProductoService implements IproductoService {
 			dtoP.setCantidad_comprada(p.getCantidad_comprada());
 			return dtoP;
 		}).map(p -> {
-				System.out.println("ps cant->: "+p.getCantidad_comprada());
 				p.setCantidad_disponible(p.getCantidad_disponible() - p.getCantidad_comprada());
 			return ProductoMapper.aProducto(p);
 		}).collect(Collectors.toList());

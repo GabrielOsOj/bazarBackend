@@ -42,21 +42,17 @@ public class DTOproducto {
 	public boolean equals(Object obj) {
 		
 		if(this == obj){
-			System.out.println("pum1");
 			return true;
 		}
 		
 		if(obj == null){
-			System.out.println("pum2");
 			return false;
 		}
 		if(getClass() != obj.getClass()){
-			System.out.println("pum3");
 			return false;
 		}
 		
 		DTOproducto entrante = (DTOproducto) obj;
-		System.out.println("pum4");
 		return (Objects.equals(entrante.codigo_producto, this.codigo_producto) && Objects.equals(entrante.cantidad_comprada, this.cantidad_comprada));
 	
 	}

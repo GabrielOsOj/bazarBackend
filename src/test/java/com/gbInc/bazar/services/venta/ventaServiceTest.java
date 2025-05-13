@@ -133,15 +133,60 @@ public class VentaServiceTest {
 	@Test
 	public void editarVentaTest() {
 		// given
-		DTOventa ventaEditada = DataProvider.getVentaEditada();
+		DTOventa ventaEditada = DataProvider.ventaParaEditar();
 		// when
 		when(this.ventaRepo.existsById(anyLong())).thenReturn(true);
 		when(this.clienteSv.traerEntidadCliente(anyLong())).thenReturn(DataProvider.getClienteUno());
 		when(this.productoSv.traerEntidadProducto(anyLong())).thenReturn(DataProvider.getProductoUno());
+		when(this.ventaRepo.findById(anyLong()))
+				.thenReturn(Optional.of(DataProvider.ventaOriginalParaEditar()));
+		
 		this.ventaSv.editarVenta(ventaEditada);
 		// then
 
-		verify(this.ventaRepo).existsById(anyLong());
+		verify(this.ventaRepo,times(2)).existsById(anyLong());
+		verify(this.clienteSv).traerEntidadCliente(anyLong());
+		verify(this.productoSv, times(ventaEditada.getListaProductos().size())).traerEntidadProducto(anyLong());
+
+	}
+	
+		@Test
+public void editarVentaTestMasProductos() {
+		// given
+		DTOventa ventaEditada = DataProvider.ventaParaEditarMasProductos();
+
+		// when
+		when(this.ventaRepo.existsById(anyLong())).thenReturn(true);
+when(this.ventaRepo.findById(anyLong()))
+				.thenReturn(Optional.of(DataProvider.ventaOriginalParaEditar()));
+		when(this.clienteSv.traerEntidadCliente(anyLong())).thenReturn(DataProvider.getClienteUno());
+		when(this.productoSv.traerEntidadProducto(anyLong())).thenReturn(DataProvider.getProductoUno());
+
+		
+		this.ventaSv.editarVenta(ventaEditada);
+		// then
+
+		verify(this.ventaRepo,atLeastOnce()).existsById(anyLong());
+		verify(this.clienteSv).traerEntidadCliente(anyLong());
+		verify(this.productoSv,atLeastOnce()).traerEntidadProducto(anyLong());
+
+	}
+
+	@Test
+	public void editarVentaTestCompactador() {
+		// given
+		DTOventa ventaEditada = DataProvider.ventaParaEditar();
+		// when
+		when(this.ventaRepo.existsById(anyLong())).thenReturn(true);
+		when(this.clienteSv.traerEntidadCliente(anyLong())).thenReturn(DataProvider.getClienteUno());
+		when(this.productoSv.traerEntidadProducto(anyLong())).thenReturn(DataProvider.getProductoUno());
+		when(this.ventaRepo.findById(anyLong()))
+				.thenReturn(Optional.of(DataProvider.ventaParaEditarProductosDobles()));
+		
+		this.ventaSv.editarVenta(ventaEditada);
+		// then
+
+		verify(this.ventaRepo,times(2)).existsById(anyLong());
 		verify(this.clienteSv).traerEntidadCliente(anyLong());
 		verify(this.productoSv, times(ventaEditada.getListaProductos().size())).traerEntidadProducto(anyLong());
 
@@ -150,7 +195,8 @@ public class VentaServiceTest {
 	@Test
 	public void editarVentaTestErrorNoExiste() {
 		// given
-		DTOventa ventaDTO = DataProvider.getVentaEditada(); // when
+		DTOventa ventaDTO = DataProvider.ventaParaEditar(); 
+// when
 		when(this.ventaRepo.existsById(ventaDTO.getCodigo_venta())).thenReturn(false);
 		// then
 		assertThrows(VentaException.class, () -> {

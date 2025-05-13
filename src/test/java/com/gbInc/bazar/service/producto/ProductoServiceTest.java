@@ -17,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DataIntegrityViolationException;
 
 @ExtendWith(MockitoExtension.class)
 public class ProductoServiceTest {
@@ -101,7 +102,7 @@ public class ProductoServiceTest {
 	}
 
 	@Test
-	public void eliminarProductoError() {
+	public void eliminarProductoErrorNoExiste() {
 		// given
 		Long idProducto = 1L;
 		// when
@@ -112,6 +113,21 @@ public class ProductoServiceTest {
 		});
 		verify(this.productoRepo).existsById(idProducto);
 
+	}
+	
+	@Test
+	public void eliminarProductoErrorEnlazadoAVenta() {
+		// given
+		Long idProducto = 999L;
+		// when
+		when(this.productoRepo.existsById(idProducto)).thenReturn(true);
+		
+		doThrow(new DataIntegrityViolationException("")).when(this.productoRepo).deleteById(idProducto);
+		// then
+		assertThrows(ProductoException.class, () -> {
+			this.productoSv.eliminarProducto(idProducto);
+		});
+		verify(this.productoRepo).existsById(idProducto);
 	}
 
 	@Test

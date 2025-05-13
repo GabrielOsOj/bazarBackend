@@ -16,6 +16,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 
 
 @Setter
@@ -32,7 +34,8 @@ public class Venta {
 	private LocalDate fecha_venta;
 	private Double total;
 	
-	@ManyToMany
+	@ManyToMany(cascade = { jakarta.persistence.CascadeType.PERSIST,
+			jakarta.persistence.CascadeType.MERGE })
 	private List<Producto> listaProductos;
 	
 	@ManyToOne

@@ -10,6 +10,7 @@ import com.gbInc.bazar.persistence.models.Cliente;
 import com.gbInc.bazar.persistence.repository.IclienteRepository;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 
 @Service
@@ -48,8 +49,11 @@ public class ClienteService implements IclienteService {
 	public void eliminarCliente(Long id) {
 
 		this.clienteExiste(id);
+		try{
 		this.clienteRepo.deleteById(id);
-
+		}catch(DataIntegrityViolationException e){
+			throw new ClienteException(HttpStatus.CONFLICT, CodigosExcepcion.BE104);
+		}
 	}
 
 	@Override

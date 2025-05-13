@@ -9,6 +9,7 @@ import com.gbInc.bazar.persistence.models.Producto;
 import com.gbInc.bazar.persistence.models.Venta;
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -77,6 +78,16 @@ public class DataProvider {
 				new DTOproducto(4L, "Cubiertos acero inox", "AceroPlus", 3200D, 50D),
 				new DTOproducto(5L, "Jarra medidora 1L", "Plásticos Norte", 1200D, 2D),
 				new DTOproducto(6L, "Fuente para horno", "Cerámica y Fuego", 4500D, 1D));
+	}
+	
+		public static List<DTOproducto> getListaProductosDTOConCantidadComprada() {
+
+		return List.of(new DTOproducto(1L, "Vaso plástico 350cc", "Colombraro", 1000D, 11D,6D),
+				new DTOproducto(2L, "Plato hondo cerámica", "Cerámicas del Sur", 2500D, 20D,7D),
+				new DTOproducto(3L, "Taza de vidrio", "Vidrios Argentinos", 1800D, 12D,9D),
+				new DTOproducto(4L, "Cubiertos acero inox", "AceroPlus", 3200D, 50D,8D),
+				new DTOproducto(5L, "Jarra medidora 1L", "Plásticos Norte", 1200D, 2D,3D),
+				new DTOproducto(6L, "Fuente para horno", "Cerámica y Fuego", 4500D, 1D,3D));
 	}
 
 	public static List<Producto> getListaProductosVacia() {
@@ -215,9 +226,39 @@ public class DataProvider {
 	public static Venta getVentaUno() {
 		return getListaDeVentas().get(0);
 	}
+	
+	public static DTOventa ventaParaEditar(){
+		return new DTOventa(4L, LocalDate.now(), 7000D, getListaProductosDTOConCantidadComprada(),getClienteUnoDTO());
+	}
+	
+	public static Venta ventaParaEditarProductosDobles(){
+		
+		Producto prodDoble = new Producto(6L, "Fuente para horno", "Cerámica y Fuego", 4500D, 8D);
+		
+		List<Producto> productosDoblesDeRespuesta = new ArrayList<>();
+		productosDoblesDeRespuesta.add(prodDoble);
+		productosDoblesDeRespuesta.add(prodDoble);
 
-	public static DTOventa getVentaEditada() {
-		return new DTOventa(3L, LocalDate.now(), 4000D, getListaProductosDTO(), getClienteUnoDTO());
+		return new Venta(4L, LocalDate.now(), 1500D, productosDoblesDeRespuesta, getListaClientes().get(2));
+	
+
+	}
+		
+	public static DTOventa ventaParaEditarMasProductos(){
+
+		List<DTOproducto> productosAgregados = new ArrayList<>();
+		productosAgregados.add(new DTOproducto(18L, "Fuente para horno", "Cerámica y Fuego", 4500D, 8D,2D));
+		
+		return new DTOventa(4L, LocalDate.now(), 7000D, productosAgregados,getClienteUnoDTO());
+	}
+	
+	
+	public static Venta ventaOriginalParaEditar() {
+		return new Venta(4L, LocalDate.now(), 1500D, getListaProductos().subList(0, getListaProductos().size()-1), getListaClientes().get(2));
+	}
+
+	public static DTOventa getVentaEditad() {
+		return new DTOventa(3L, LocalDate.now(), 4000D, getListaProductosDTO(),getClienteUnoDTO());
 	}
 
 	public static DTOventaYmontoDia getVentaYmontoDTO() {

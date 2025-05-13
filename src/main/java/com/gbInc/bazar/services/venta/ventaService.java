@@ -98,17 +98,44 @@ public class VentaService implements IventaService {
 
 	@Override
 	public void editarVenta(DTOventa ventaEditada) {
-
+		
 		this.ventaExiste(ventaEditada.getCodigo_venta());
 		this.validacionesVenta(ventaEditada);
-
-		System.out.println(ventaEditada.getListaProductos().get(0).getCantidad_comprada());
-
+		
 		Cliente cli = this.clienteSv.traerEntidadCliente(ventaEditada.getCliente().getId_cliente());
 
-		List<DTOproducto> productosDeLaVentaGuardados = this
-			.compactadorProductos(this.listaDeProductos(ventaEditada.getCodigo_venta()));
+		
+		List<DTOproducto> productosAgregados = 
+				this.parseadorProductos(ventaEditada.getCodigo_venta(),ventaEditada.getListaProductos());
+		
 
+		this.productoSv.actualizarStock(productosAgregados);
+
+		List<Producto> productosPlanos = new ArrayList<>();
+		for (DTOproducto p : ventaEditada.getListaProductos()) {
+			Producto productoBDD = this.productoSv.traerEntidadProducto(p.getCodigo_producto());
+			for (int i = 0; i < p.getCantidad_comprada(); i++) {
+				productosPlanos.add(productoBDD);
+			}
+		}
+		
+		Venta nuevaVenta = Venta.builder()
+			.codigo_venta(ventaEditada.getCodigo_venta())
+			.fecha_venta(ventaEditada.getFecha_venta())
+			.cliente(cli)
+			.listaProductos(productosPlanos)
+			.total(ventaEditada.getTotal())
+			.build();
+
+		this.ventaRepo.save(nuevaVenta);
+		
+	}
+	
+	private List<DTOproducto> parseadorProductos(Long idVenta, List<DTOproducto> listaProductosEntrantes){
+
+		List<DTOproducto> productosDeLaVentaGuardados = this
+			.compactadorProductos(this.listaDeProductos(idVenta));
+		
 		List<Long> idProductoGuardado = productosDeLaVentaGuardados.stream()
 			.map(pg -> pg.getCodigo_producto())
 			.collect(Collectors.toList());
@@ -116,8 +143,7 @@ public class VentaService implements IventaService {
 		List<DTOproducto> productosNuevos = new ArrayList<>();
 		List<DTOproducto> productosAgregados = new ArrayList<>();
 
-		List<DTOproducto> copiaProductos = ventaEditada.getListaProductos().stream().map((p) -> {
-			System.out.println(p.getCantidad_comprada());
+		List<DTOproducto> copiaProductos =listaProductosEntrantes.stream().map((p) -> {
 			return DTOproducto.builder()
 				.codigo_producto(p.getCodigo_producto())
 				.nombre(p.getNombre())
@@ -142,84 +168,11 @@ public class VentaService implements IventaService {
 				productosAgregados.add(p);
 				return;
 			}
-			// si existia compruebo si se le sacaron productos
-			if (p.getCantidad_comprada() < productosDeLaVentaGuardados.get(index).getCantidad_comprada()) {
-				p.setCantidad_comprada(
-						productosDeLaVentaGuardados.get(index).getCantidad_comprada() - p.getCantidad_comprada());
-				
-				return;
-			}
 			// si existia y se mantiene igual, lo descarto
 		});
 
 		productosAgregados.addAll(productosNuevos);
-
-		this.productoSv.actualizarStock(productosAgregados);
-
-		List<Producto> productosPlanos = new ArrayList<>();
-		for (DTOproducto p : ventaEditada.getListaProductos()) {
-			Producto productoBDD = this.productoSv.traerEntidadProducto(p.getCodigo_producto());
-			for (int i = 0; i < p.getCantidad_comprada(); i++) {
-				productosPlanos.add(productoBDD);
-			}
-		}
-		System.out.println(ventaEditada.getTotal());
-		Venta nuevaVenta = Venta.builder()
-			.codigo_venta(ventaEditada.getCodigo_venta())
-			.fecha_venta(ventaEditada.getFecha_venta())
-			.cliente(cli)
-			.listaProductos(productosPlanos)
-			.total(ventaEditada.getTotal())
-			.build();
-
-		this.ventaRepo.save(nuevaVenta);
-
-//		System.out.println("Productos guardados --");
-//		productosDeLaVentaGuardados.forEach((p) -> {
-//			System.out.println(p.getNombre());
-//			System.out.println(p.getCantidad_comprada());
-//
-//		});
-//
-//		System.out.println("Productos entrantes --");
-//		ventaEditada.getListaProductos().forEach((p) -> {
-//			System.out.println(p.getNombre());
-//			System.out.println(p.getCantidad_comprada());
-//
-//		});
-//
-//		System.out.println("Productos nuevos --");
-//		productosNuevos.forEach((p) -> {
-//			System.out.println(p.getNombre());
-//			System.out.println(p.getCantidad_comprada());
-//		});
-//
-//		System.out.println("Productos agregados --");
-//		productosAgregados.forEach((p) -> {
-//			System.out.println(p.getNombre());
-//			System.out.println(p.getCantidad_comprada());
-//		});
-
-//		System.out.println("Productos descontados --");
-//		productosDescontados.forEach((p) -> {
-//			System.out.println(p.getNombre());
-//			System.out.println(p.getCantidad_comprada());
-//		});
-//
-//		System.out.println("Productos para agregar --");
-//		productosAgregados.forEach((p) -> {
-//			System.out.println(p.getNombre());
-//			System.out.println(p.getCantidad_comprada());
-//		});
-//
-//		System.out.println("Productos planos --");
-//		productosPlanos.forEach((p) -> {
-//			System.out.println(p.getCodigo_producto());
-//			System.out.println(p.getNombre());
-//		});
-//
-//		System.out.println("-------------------------");
-
+		return productosAgregados;
 	}
 
 	@Override
