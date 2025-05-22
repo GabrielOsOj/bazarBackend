@@ -1,11 +1,11 @@
-package com.gbInc.bazar.service.producto;
+package com.gbInc.bazar.services.producto;
 
 import com.gbInc.bazar.DTO.DTOproducto;
 import com.gbInc.bazar.DataProvider;
 import com.gbInc.bazar.exception.producto.ProductoException;
 import com.gbInc.bazar.persistence.models.Producto;
 import com.gbInc.bazar.persistence.repository.IproductoRepository;
-import com.gbInc.bazar.services.producto.ProductoService;
+
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -114,14 +114,14 @@ public class ProductoServiceTest {
 		verify(this.productoRepo).existsById(idProducto);
 
 	}
-	
+
 	@Test
 	public void eliminarProductoErrorEnlazadoAVenta() {
 		// given
 		Long idProducto = 999L;
 		// when
 		when(this.productoRepo.existsById(idProducto)).thenReturn(true);
-		
+
 		doThrow(new DataIntegrityViolationException("")).when(this.productoRepo).deleteById(idProducto);
 		// then
 		assertThrows(ProductoException.class, () -> {
@@ -151,13 +151,13 @@ public class ProductoServiceTest {
 		DTOproducto productoEdit = DataProvider.getProductoEditado();
 		// when
 		when(this.productoRepo.existsById(productoEdit.getCodigo_producto())).thenReturn(false);
-		
+
 		// then
-		assertThrows(ProductoException.class, ()->{
-		
+		assertThrows(ProductoException.class, () -> {
+
 			this.productoSv.editarProducto(productoEdit);
 		});
-		
+
 		verify(this.productoRepo).existsById(productoEdit.getCodigo_producto());
 
 	}
@@ -200,59 +200,55 @@ public class ProductoServiceTest {
 	}
 
 	@Test
-	public void faltaStockTest(){
-		//given
-		//when
-		when(this.productoRepo.faltaStock())
-				.thenReturn(DataProvider.getListaProductos());
+	public void faltaStockTest() {
+		// given
+		// when
+		when(this.productoRepo.faltaStock()).thenReturn(DataProvider.getListaProductos());
 		List<DTOproducto> productos = this.productoSv.faltaStock();
-		//then
+		// then
 		assertNotNull(productos);
 		verify(this.productoRepo).faltaStock();
 	}
-	
-		@Test
-	public void faltaStockTestListaVacia(){
-		//given
-		//when
-		when(this.productoRepo.faltaStock())
-				.thenReturn(DataProvider.getListaProductosVacia());
+
+	@Test
+	public void faltaStockTestListaVacia() {
+		// given
+		// when
+		when(this.productoRepo.faltaStock()).thenReturn(DataProvider.getListaProductosVacia());
 		List<DTOproducto> productos = this.productoSv.faltaStock();
-		//then
-		assertEquals(List.of(),productos);
+		// then
+		assertEquals(List.of(), productos);
 		verify(this.productoRepo).faltaStock();
 	}
-	
+
 	@Test
-	public void actualizarStockTest(){
-		//given
+	public void actualizarStockTest() {
+		// given
 		List<DTOproducto> productos = List.of(DataProvider.getProductoConOtroStockDTO());
-		//when
-		when(this.productoRepo.existsById(anyLong()))
-				.thenReturn(true);
-		when(this.productoRepo.findById(anyLong()))
-				.thenReturn(Optional.of(DataProvider.getProductoConOtroStock()));
+		// when
+		when(this.productoRepo.existsById(anyLong())).thenReturn(true);
+		when(this.productoRepo.findById(anyLong())).thenReturn(Optional.of(DataProvider.getProductoConOtroStock()));
 		this.productoSv.actualizarStock(productos);
-		//then
+		// then
 		ArgumentCaptor capturador = ArgumentCaptor.forClass(Producto.class);
 		verify(this.productoRepo).saveAll(any());
 	}
-	
+
 	@Test
-	public void actualizarStockTestErrorStockNoSuficiente(){
-		//given
+	public void actualizarStockTestErrorStockNoSuficiente() {
+		// given
 		List<DTOproducto> productos = List.of(DataProvider.getProductoConOtroStockErrorDTO());
-		//when
-		when(this.productoRepo.existsById(anyLong()))
-				.thenReturn(true);
+		// when
+		when(this.productoRepo.existsById(anyLong())).thenReturn(true);
 		when(this.productoRepo.findById(anyLong()))
-				.thenReturn(Optional.of(DataProvider.getProductoConOtroStockError()));
-		
-		assertThrows(ProductoException.class, ()->{
+			.thenReturn(Optional.of(DataProvider.getProductoConOtroStockError()));
+
+		assertThrows(ProductoException.class, () -> {
 			this.productoSv.actualizarStock(productos);
 		});
-		
-		//then
+
+		// then
 
 	}
+
 }
